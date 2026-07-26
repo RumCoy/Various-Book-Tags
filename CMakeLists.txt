@@ -32,4 +32,4 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION "SKSE/Plugins"
     LIBRARY DESTINATION "SKSE/Plugins"
 )
-install(FILES "Package Source - MAKE EDITS HERE/Data/SKSE/Plugins/VariousBookTags_InternalData.ini" DESTINATION "SKSE/Plugins")
+install(FILES "zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data/SKSE/Plugins/VariousBookTags_InternalData.ini" DESTINATION "SKSE/Plugins")

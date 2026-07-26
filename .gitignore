@@ -1,4 +1,4 @@
 /build/
 /docs/
 *.zip
-/Package Source - MAKE EDITS HERE/Data/SKSE/Plugins/VariousBookTags.dll
+/zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data/SKSE/Plugins/VariousBookTags.dll

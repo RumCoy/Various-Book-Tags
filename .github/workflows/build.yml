@@ -68,13 +68,12 @@ jobs:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: cmake --build --preset release
 
-      - name: Create Nexus-ready release ZIPs
+      - name: Create artifact staging folders
         shell: pwsh
         run: |
-          $packageSource = "Package Source - MAKE EDITS HERE/Data/SKSE/Plugins"
+          $packageSource = "zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data/SKSE/Plugins"
           $userConfig = Join-Path $packageSource "VariousBookTags_UserConfig.ini"
           $stageRoot = Join-Path $env:RUNNER_TEMP "VariousBookTagsRelease"
-          $outputRoot = Join-Path $env:RUNNER_TEMP "VariousBookTagsOutput"
           $mainRoot = Join-Path $stageRoot "main"
           $userPlugins = Join-Path $stageRoot "user\Data\SKSE\Plugins"
 
@@ -89,17 +88,19 @@ jobs:
           New-Item -ItemType Directory -Force -Path $userPlugins | Out-Null
           Copy-Item -LiteralPath $userConfig -Destination (Join-Path $userPlugins "VariousBookTags_UserConfig.ini")
 
-          New-Item -ItemType Directory -Force -Path $outputRoot | Out-Null
-          Compress-Archive -LiteralPath (Join-Path $mainRoot "Data") -DestinationPath (Join-Path $outputRoot "Various Book Tags - Main File.zip") -CompressionLevel Optimal -Force
-          Compress-Archive -LiteralPath (Join-Path $stageRoot "user\Data") -DestinationPath (Join-Path $outputRoot "Various Book Tags - User Config.zip") -CompressionLevel Optimal -Force
-
-      - name: Upload both Nexus-ready ZIPs
+      - name: Upload main file
         uses: actions/upload-artifact@v6
         with:
-          name: Various-Book-Tags-Release-Zips
-          path: ${{ runner.temp }}/VariousBookTagsOutput/*.zip
+          name: Various Book Tags
+          path: ${{ runner.temp }}/VariousBookTagsRelease/main/
           if-no-files-found: error
-          compression-level: 0
+
+      - name: Upload user config
+        uses: actions/upload-artifact@v6
+        with:
+          name: Various Book Tags - Config
+          path: ${{ runner.temp }}/VariousBookTagsRelease/user/
+          if-no-files-found: error
 
       - name: Upload build logs on failure
         if: failure()
