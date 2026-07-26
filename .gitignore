@@ -1,4 +1,8 @@
-/build/
-/docs/
+docs/
 *.zip
-/zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data/SKSE/Plugins/VariousBookTags.dll
+build/
+package/
+user-config-package/
+vcpkg/
+vcpkg-binary-cache/
+zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data/SKSE/Plugins/VariousBookTags.dll

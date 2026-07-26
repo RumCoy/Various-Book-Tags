@@ -15,5 +15,11 @@ namespace VariousBookTags::FormOrigin
         std::uint32_t localFormID{};
     };
 
-    [[nodiscard]] std::optional<Identity> Resolve(const RE::TESForm* form);
+    struct Provenance
+    {
+        Identity origin;
+        Identity winner;
+    };
+
+    [[nodiscard]] std::optional<Provenance> Resolve(const RE::TESForm* form);
 }

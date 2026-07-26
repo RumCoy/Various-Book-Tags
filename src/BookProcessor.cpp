@@ -4,12 +4,15 @@
 #include "FormOrigin.h"
 
 #include <SKSE/SKSE.h>
+#include <SKSE/Translation.h>
 
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace
 {
@@ -144,23 +147,37 @@ namespace VariousBookTags::BookProcessor
                 continue;
             }
 
-            const auto origin = FormOrigin::Resolve(book);
-            if (!origin) {
+            const auto provenance = FormOrigin::Resolve(book);
+            if (!provenance) {
                 continue;
             }
-            const bool vanilla = IsVanillaMaster(origin->filename);
+            const bool vanilla = IsVanillaMaster(provenance->origin.filename);
             Rule fallbackRule;
-            const auto* rule = config.FindRule(origin->filename);
+            const FormOrigin::Identity* tagIdentity = nullptr;
+            const Rule* rule = nullptr;
+            if (provenance->winner.file != provenance->origin.file) {
+                rule = config.FindRule(provenance->winner.filename);
+                if (rule) {
+                    tagIdentity = std::addressof(provenance->winner);
+                }
+            }
+            if (!rule) {
+                rule = config.FindRule(provenance->origin.filename);
+                if (rule) {
+                    tagIdentity = std::addressof(provenance->origin);
+                }
+            }
             bool usingFallback = false;
             if (!rule) {
                 if (!config.GlobalPluginNameFallbackEnabled() || vanilla) {
                     continue;
                 }
-                fallbackRule.tag = MakeFallbackTag(origin->filename);
+                tagIdentity = std::addressof(provenance->winner);
+                fallbackRule.tag = MakeFallbackTag(tagIdentity->filename);
                 rule = &fallbackRule;
                 usingFallback = true;
             }
-            if (!rule->Allows(origin->localFormID)) {
+            if (!tagIdentity || !rule->Allows(tagIdentity->localFormID)) {
                 continue;
             }
 
@@ -175,7 +192,15 @@ namespace VariousBookTags::BookProcessor
                 continue;
             }
 
-            const std::string original{ currentName };
+            std::string original{ currentName };
+            if (original.starts_with('$')) {
+                std::string translated;
+                if (!SKSE::Translation::Translate(original, translated) || translated.empty()) {
+                    SKSE::log::debug("Deferred unresolved book localization token: {}", original);
+                    continue;
+                }
+                original = std::move(translated);
+            }
             std::string output{ original };
             if (!std::isspace(static_cast<unsigned char>(output.back()))) {
                 output.push_back(' ');
@@ -195,7 +220,7 @@ namespace VariousBookTags::BookProcessor
             }
 
             SKSE::log::debug("Tagged {}|{:X}: {} -> {}",
-                origin->filename, origin->localFormID, original, output);
+                tagIdentity->filename, tagIdentity->localFormID, original, output);
         }
 
         SKSE::log::info(

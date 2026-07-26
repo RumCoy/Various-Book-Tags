@@ -2,7 +2,7 @@
 
 namespace VariousBookTags::FormOrigin
 {
-    std::optional<Identity> Resolve(const RE::TESForm* form)
+    std::optional<Provenance> Resolve(const RE::TESForm* form)
     {
         if (!form) {
             return std::nullopt;
@@ -35,10 +35,22 @@ namespace VariousBookTags::FormOrigin
             return std::nullopt;
         }
 
-        return Identity{
-            .file = originFile,
-            .filename = std::string{ originFile->GetFilename() },
-            .localFormID = localFormID
+        const auto* winningFile = form->GetFile();
+        if (!winningFile) {
+            winningFile = originFile;
+        }
+
+        return Provenance{
+            .origin = Identity{
+                .file = originFile,
+                .filename = std::string{ originFile->GetFilename() },
+                .localFormID = localFormID
+            },
+            .winner = Identity{
+                .file = winningFile,
+                .filename = std::string{ winningFile->GetFilename() },
+                .localFormID = localFormID
+            }
         };
     }
 }

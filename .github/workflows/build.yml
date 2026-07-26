@@ -20,18 +20,20 @@ env:
 
 jobs:
   build-windows:
-    name: Windows / MSVC 2022
-    runs-on: windows-2022
+    name: Windows / MSVC 2026
+    runs-on: windows-2025-vs2026
 
     steps:
       - name: Check out project
         uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Check out vcpkg
         uses: actions/checkout@v6
         with:
           repository: microsoft/vcpkg
-          ref: aa2d37682e3318d93aef87efa7b0e88e81cd3d59
+          ref: ee12231b20c95013c6638d845d04c91559a1d1ff
           path: vcpkg
 
       - name: Bootstrap vcpkg
@@ -43,7 +45,7 @@ jobs:
         uses: actions/cache/restore@v6
         with:
           path: vcpkg-binary-cache
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json') }}
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json', 'vcpkg-configuration.json', '.gitmodules', 'lib/commonlibsse-ng/vcpkg.json') }}
 
       - name: Ensure vcpkg binary cache directory exists
         shell: pwsh
@@ -68,45 +70,74 @@ jobs:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: cmake --build --preset release
 
-      - name: Create artifact staging folders
+      - name: Create mod staging folders
         shell: pwsh
+        env:
+          VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: |
-          $packageSource = "zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data/SKSE/Plugins"
-          $userConfig = Join-Path $packageSource "VariousBookTags_UserConfig.ini"
-          $stageRoot = Join-Path $env:RUNNER_TEMP "VariousBookTagsRelease"
-          $mainRoot = Join-Path $stageRoot "main"
-          $userPlugins = Join-Path $stageRoot "user\Data\SKSE\Plugins"
+          $packageSource = "zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data"
+          $userConfigSource = Join-Path $packageSource "SKSE/Plugins/VariousBookTags_UserConfig.ini"
 
-          cmake --install build/release --config Release --prefix (Join-Path $mainRoot "Data")
-          if (!(Test-Path (Join-Path $mainRoot "Data\SKSE\Plugins\VariousBookTags.dll"))) {
+          cmake --install build/release --config Release --prefix package/Data
+          if (!(Test-Path package/Data/SKSE/Plugins/VariousBookTags.dll)) {
             throw "Expected packaged DLL was not produced: VariousBookTags.dll"
           }
-          if (!(Test-Path (Join-Path $mainRoot "Data\SKSE\Plugins\VariousBookTags_InternalData.ini"))) {
-            throw "Expected internal configuration was not packaged"
+          if (!(Test-Path package/Data/SKSE/Plugins/VariousBookTags_InternalData.ini)) {
+            throw "Expected internal-data file was not packaged: VariousBookTags_InternalData.ini"
           }
 
-          New-Item -ItemType Directory -Force -Path $userPlugins | Out-Null
-          Copy-Item -LiteralPath $userConfig -Destination (Join-Path $userPlugins "VariousBookTags_UserConfig.ini")
+          $legalDirectory = "package/Data/Docs/Various Book Tags"
+          $legalFile = Join-Path $legalDirectory "LICENSES_AND_SOURCE.txt"
+          New-Item -ItemType Directory -Force -Path $legalDirectory | Out-Null
 
-      - name: Upload main file
+          @(
+            "VARIOUS BOOK TAGS"
+            "LICENSES AND SOURCE INFORMATION"
+            ""
+            "Corresponding source code is available from the public repository associated with this release."
+          ) | Set-Content -LiteralPath $legalFile -Encoding utf8
+
+          function Add-LicenseSection {
+            param([string]$Title, [string]$SourcePath)
+            Add-Content -LiteralPath $legalFile -Value @("", "===== $Title =====", "") -Encoding utf8
+            Get-Content -Raw -LiteralPath $SourcePath | Add-Content -LiteralPath $legalFile -Encoding utf8
+          }
+
+          Add-LicenseSection "Various Book Tags license notice" "LICENSE"
+          Add-LicenseSection "GNU General Public License version 3" "COPYING"
+          Add-LicenseSection "CommonLibSSE-NG exceptions" "lib/commonlibsse-ng/EXCEPTIONS.md"
+          Add-LicenseSection "CommonLibSSE-NG original MIT license" "lib/commonlibsse-ng/LICENSE"
+          Add-LicenseSection "DirectXMath license notices" "build/release/vcpkg_installed/x64-windows-static-md/share/directxmath/copyright"
+          Add-LicenseSection "DirectXTK license notices" "build/release/vcpkg_installed/x64-windows-static-md/share/directxtk/copyright"
+          Add-LicenseSection "fmt license notices" "build/release/vcpkg_installed/x64-windows-static-md/share/fmt/copyright"
+          Add-LicenseSection "rapidcsv license notices" "build/release/vcpkg_installed/x64-windows-static-md/share/rapidcsv/copyright"
+          Add-LicenseSection "spdlog license notices" "build/release/vcpkg_installed/x64-windows-static-md/share/spdlog/copyright"
+
+          if (!(Test-Path -LiteralPath $userConfigSource)) {
+            throw "Expected user-config template was not found: $userConfigSource"
+          }
+          New-Item -ItemType Directory -Force -Path user-config-package/Data/SKSE/Plugins | Out-Null
+          Copy-Item -LiteralPath $userConfigSource -Destination user-config-package/Data/SKSE/Plugins/VariousBookTags_UserConfig.ini
+
+      - name: Upload ready-to-install mod package
         uses: actions/upload-artifact@v6
         with:
           name: Various Book Tags
-          path: ${{ runner.temp }}/VariousBookTagsRelease/main/
+          path: package/
           if-no-files-found: error
 
-      - name: Upload user config
+      - name: Upload optional user-config template
         uses: actions/upload-artifact@v6
         with:
           name: Various Book Tags - Config
-          path: ${{ runner.temp }}/VariousBookTagsRelease/user/
+          path: user-config-package/
           if-no-files-found: error
 
       - name: Upload build logs on failure
         if: failure()
         uses: actions/upload-artifact@v6
         with:
-          name: Various-Book-Tags-build-diagnostics
+          name: Various Book Tags - Build Diagnostics
           path: |
             build/release/CMakeCache.txt
             build/release/vcpkg-manifest-install.log
