@@ -61,13 +61,13 @@ namespace
         title.push_back(')');
     }
 
-    struct ClassTag
+    struct SkillTag
     {
         std::string_view text;
         bool spell{};
     };
 
-    std::string_view ClassLabel(RE::ActorValue actorValue)
+    std::string_view SkillLabel(RE::ActorValue actorValue)
     {
         switch (actorValue) {
         case RE::ActorValue::kOneHanded: return "One Handed";
@@ -92,22 +92,22 @@ namespace
         }
     }
 
-    ClassTag ResolveClassTag(RE::TESObjectBOOK* book,
+    SkillTag ResolveSkillTag(RE::TESObjectBOOK* book,
         const VariousBookTags::Config& config, const VariousBookTags::Rule& rule)
     {
-        if (!config.ClassTagsEnabled() || !rule.classTags) {
+        if (!config.SkillTagsEnabled() || !rule.skillTags) {
             return {};
         }
 
         if (book->TeachesSpell()) {
             if (auto* spell = book->GetSpell()) {
-                return { ClassLabel(spell->GetAssociatedSkill()), true };
+                return { SkillLabel(spell->GetAssociatedSkill()), true };
             }
             return {};
         }
 
         if (book->TeachesSkill()) {
-            return { ClassLabel(book->GetSkill()), false };
+            return { SkillLabel(book->GetSkill()), false };
         }
         return {};
     }
@@ -181,14 +181,14 @@ namespace VariousBookTags::BookProcessor
                 continue;
             }
 
-            const auto classTag = ResolveClassTag(book, config, *rule);
+            const auto skillTag = ResolveSkillTag(book, config, *rule);
             std::string_view modNameTag;
             if (config.ModNameTagsEnabled() && rule->modNameTags &&
                 !vanilla) {
                 modNameTag = rule->tag;
             }
 
-            if (classTag.text.empty() && modNameTag.empty()) {
+            if (skillTag.text.empty() && modNameTag.empty()) {
                 continue;
             }
 
@@ -205,12 +205,12 @@ namespace VariousBookTags::BookProcessor
             if (!std::isspace(static_cast<unsigned char>(output.back()))) {
                 output.push_back(' ');
             }
-            AppendTag(output, classTag.text);
+            AppendTag(output, skillTag.text);
             AppendTag(output, modNameTag);
             book->fullName = output;
             ++changed;
-            if (!classTag.text.empty()) {
-                classTag.spell ? ++spellTagged : ++skillTagged;
+            if (!skillTag.text.empty()) {
+                skillTag.spell ? ++spellTagged : ++skillTagged;
             }
             if (!modNameTag.empty()) {
                 ++modNameTagged;

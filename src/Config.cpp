@@ -100,7 +100,7 @@ namespace VariousBookTags
     void Config::Reset()
     {
         enabled_ = true;
-        classTagsEnabled_ = true;
+        skillTagsEnabled_ = true;
         modNameTagsEnabled_ = true;
         globalPluginNameFallbackEnabled_ = false;
         rules_.clear();
@@ -117,8 +117,8 @@ namespace VariousBookTags
         const bool loadedUserConfig = LoadUserFile(userConfigPath);
 
         SKSE::log::info(
-            "Configuration complete: {} book rule(s); enabled={}; class={}; modNameTags={}; globalPluginNameFallback={}; embeddedData={}; userConfig={}",
-            rules_.size(), enabled_, classTagsEnabled_,
+            "Configuration complete: {} book rule(s); enabled={}; skillTags={}; modNameTags={}; globalPluginNameFallback={}; embeddedData={}; userConfig={}",
+            rules_.size(), enabled_, skillTagsEnabled_,
             modNameTagsEnabled_, globalPluginNameFallbackEnabled_,
             loadedEmbeddedData, loadedUserConfig);
         return loadedEmbeddedData || loadedUserConfig;
@@ -182,8 +182,8 @@ namespace VariousBookTags
                 const auto canonical = CanonicalKey(key);
                 if (canonical == "enabled") {
                     enabled_ = ParseBool(value, enabled_);
-                } else if (canonical == "classtags") {
-                    classTagsEnabled_ = ParseBool(value, true);
+                } else if (canonical == "skilltags") {
+                    skillTagsEnabled_ = ParseBool(value, true);
                 } else if (canonical == "modnametags") {
                     modNameTagsEnabled_ = ParseBool(value, true);
                 } else if (canonical == "globalpluginnamefallback") {
@@ -204,8 +204,8 @@ namespace VariousBookTags
                 ParseFormList(std::move(value), activeRule->includeForms);
             } else if (canonical == "excludeforms") {
                 ParseFormList(std::move(value), activeRule->excludeForms);
-            } else if (canonical == "classtags") {
-                activeRule->classTags = ParseBool(value, true);
+            } else if (canonical == "skilltags") {
+                activeRule->skillTags = ParseBool(value, true);
             } else if (canonical == "modnametags") {
                 activeRule->modNameTags = ParseBool(value, true);
             }
@@ -231,9 +231,9 @@ namespace VariousBookTags
         return enabled_;
     }
 
-    bool Config::ClassTagsEnabled() const noexcept
+    bool Config::SkillTagsEnabled() const noexcept
     {
-        return classTagsEnabled_;
+        return skillTagsEnabled_;
     }
 
     bool Config::ModNameTagsEnabled() const noexcept
