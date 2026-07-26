@@ -130,7 +130,7 @@ namespace VariousBookTags::BookProcessor
         std::size_t changed = 0;
         std::size_t skillTagged = 0;
         std::size_t spellTagged = 0;
-        std::size_t sourceTagged = 0;
+        std::size_t modNameTagged = 0;
         std::size_t fallbackTagged = 0;
 
         for (auto* book : dataHandler->GetFormArray<RE::TESObjectBOOK>()) {
@@ -165,13 +165,13 @@ namespace VariousBookTags::BookProcessor
             }
 
             const auto classTag = ResolveClassTag(book, config, *rule);
-            std::string_view sourceTag;
-            if (config.SourceTagsEnabled() && rule->sourceTags &&
+            std::string_view modNameTag;
+            if (config.ModNameTagsEnabled() && rule->modNameTags &&
                 !vanilla) {
-                sourceTag = rule->tag;
+                modNameTag = rule->tag;
             }
 
-            if (classTag.text.empty() && sourceTag.empty()) {
+            if (classTag.text.empty() && modNameTag.empty()) {
                 continue;
             }
 
@@ -181,14 +181,14 @@ namespace VariousBookTags::BookProcessor
                 output.push_back(' ');
             }
             AppendTag(output, classTag.text);
-            AppendTag(output, sourceTag);
+            AppendTag(output, modNameTag);
             book->fullName = output;
             ++changed;
             if (!classTag.text.empty()) {
                 classTag.spell ? ++spellTagged : ++skillTagged;
             }
-            if (!sourceTag.empty()) {
-                ++sourceTagged;
+            if (!modNameTag.empty()) {
+                ++modNameTagged;
                 if (usingFallback) {
                     ++fallbackTagged;
                 }
@@ -199,7 +199,7 @@ namespace VariousBookTags::BookProcessor
         }
 
         SKSE::log::info(
-            "Book processing complete: inspected={}; changed={}; skill={}; spell={}; source={}; fallback={}",
-            inspected, changed, skillTagged, spellTagged, sourceTagged, fallbackTagged);
+            "Book processing complete: inspected={}; changed={}; skill={}; spell={}; modName={}; fallback={}",
+            inspected, changed, skillTagged, spellTagged, modNameTagged, fallbackTagged);
     }
 }

@@ -101,7 +101,7 @@ namespace VariousBookTags
     {
         enabled_ = true;
         classTagsEnabled_ = true;
-        sourceTagsEnabled_ = true;
+        modNameTagsEnabled_ = true;
         globalPluginNameFallbackEnabled_ = false;
         rules_.clear();
     }
@@ -114,9 +114,9 @@ namespace VariousBookTags
         const bool loadedUser = LoadFile(userPath, true);
 
         SKSE::log::info(
-            "Configuration complete: {} book rule(s); enabled={}; class={}; source={}; globalPluginNameFallback={}; main={}; user={}",
+            "Configuration complete: {} book rule(s); enabled={}; class={}; modNameTags={}; globalPluginNameFallback={}; main={}; user={}",
             rules_.size(), enabled_, classTagsEnabled_,
-            sourceTagsEnabled_, globalPluginNameFallbackEnabled_, loadedMain, loadedUser);
+            modNameTagsEnabled_, globalPluginNameFallbackEnabled_, loadedMain, loadedUser);
         return loadedMain || loadedUser;
     }
 
@@ -179,8 +179,8 @@ namespace VariousBookTags
                     enabled_ = ParseBool(value, enabled_);
                 } else if (canonical == "classtags") {
                     classTagsEnabled_ = ParseBool(value, true);
-                } else if (canonical == "sourcetags") {
-                    sourceTagsEnabled_ = ParseBool(value, true);
+                } else if (canonical == "modnametags") {
+                    modNameTagsEnabled_ = ParseBool(value, true);
                 } else if (canonical == "globalpluginnamefallback") {
                     globalPluginNameFallbackEnabled_ = ParseBool(
                         value, globalPluginNameFallbackEnabled_);
@@ -201,8 +201,8 @@ namespace VariousBookTags
                 ParseFormList(std::move(value), activeRule->excludeForms);
             } else if (canonical == "classtags") {
                 activeRule->classTags = ParseBool(value, true);
-            } else if (canonical == "sourcetags") {
-                activeRule->sourceTags = ParseBool(value, true);
+            } else if (canonical == "modnametags") {
+                activeRule->modNameTags = ParseBool(value, true);
             }
         }
 
@@ -231,9 +231,9 @@ namespace VariousBookTags
         return classTagsEnabled_;
     }
 
-    bool Config::SourceTagsEnabled() const noexcept
+    bool Config::ModNameTagsEnabled() const noexcept
     {
-        return sourceTagsEnabled_;
+        return modNameTagsEnabled_;
     }
 
     bool Config::GlobalPluginNameFallbackEnabled() const noexcept

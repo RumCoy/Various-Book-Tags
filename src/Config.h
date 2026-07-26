@@ -17,7 +17,7 @@ namespace VariousBookTags
         std::unordered_set<std::uint32_t> includeForms;
         std::unordered_set<std::uint32_t> excludeForms;
         bool classTags{ true };
-        bool sourceTags{ true };
+        bool modNameTags{ true };
 
         [[nodiscard]] bool Allows(std::uint32_t localFormID) const;
     };
@@ -32,7 +32,7 @@ namespace VariousBookTags
 
         [[nodiscard]] bool Enabled() const noexcept;
         [[nodiscard]] bool ClassTagsEnabled() const noexcept;
-        [[nodiscard]] bool SourceTagsEnabled() const noexcept;
+        [[nodiscard]] bool ModNameTagsEnabled() const noexcept;
         [[nodiscard]] bool GlobalPluginNameFallbackEnabled() const noexcept;
         [[nodiscard]] const Rule* FindRule(std::string_view pluginName) const;
 
@@ -42,7 +42,7 @@ namespace VariousBookTags
 
         bool enabled_{ true };
         bool classTagsEnabled_{ true };
-        bool sourceTagsEnabled_{ true };
+        bool modNameTagsEnabled_{ true };
         bool globalPluginNameFallbackEnabled_{ false };
         std::unordered_map<std::string, Rule> rules_;
     };
