@@ -106,32 +106,37 @@ namespace VariousBookTags
         rules_.clear();
     }
 
-    bool Config::Load(const std::filesystem::path& mainPath,
-        const std::filesystem::path& userPath)
+    bool Config::Load(std::string_view embeddedInternalData,
+        const std::filesystem::path& userConfigPath)
     {
         Reset();
-        const bool loadedMain = LoadFile(mainPath, false);
-        const bool loadedUser = LoadFile(userPath, true);
+
+        std::istringstream internalDataInput{ std::string(embeddedInternalData) };
+        const bool loadedEmbeddedData = embeddedInternalData.empty() ?
+            false : LoadStream(internalDataInput, "embedded internal data");
+        const bool loadedUserConfig = LoadUserFile(userConfigPath);
 
         SKSE::log::info(
-            "Configuration complete: {} book rule(s); enabled={}; class={}; modNameTags={}; globalPluginNameFallback={}; main={}; user={}",
+            "Configuration complete: {} book rule(s); enabled={}; class={}; modNameTags={}; globalPluginNameFallback={}; embeddedData={}; userConfig={}",
             rules_.size(), enabled_, classTagsEnabled_,
-            modNameTagsEnabled_, globalPluginNameFallbackEnabled_, loadedMain, loadedUser);
-        return loadedMain || loadedUser;
+            modNameTagsEnabled_, globalPluginNameFallbackEnabled_,
+            loadedEmbeddedData, loadedUserConfig);
+        return loadedEmbeddedData || loadedUserConfig;
     }
 
-    bool Config::LoadFile(const std::filesystem::path& path, bool optional)
+    bool Config::LoadUserFile(const std::filesystem::path& path)
     {
         std::ifstream input(path);
         if (!input) {
-            if (optional) {
-                SKSE::log::info("Optional user configuration not found: {}", path.string());
-            } else {
-                SKSE::log::warn("Main configuration not found: {}", path.string());
-            }
+            SKSE::log::info("Optional user configuration not found: {}", path.string());
             return false;
         }
 
+        return LoadStream(input, path.filename().string());
+    }
+
+    bool Config::LoadStream(std::istream& input, std::string sourceName)
+    {
         std::unordered_map<std::string, Rule> fileRules;
         enum class Section { kOther, kGeneral, kPlugin };
         Section activeSection = Section::kOther;
@@ -167,7 +172,7 @@ namespace VariousBookTags
             const auto separator = line.find('=');
             if (separator == std::string::npos) {
                 SKSE::log::warn("Ignored malformed line {} in {}",
-                    lineNumber, path.filename().string());
+                    lineNumber, sourceName);
                 continue;
             }
 
@@ -217,7 +222,7 @@ namespace VariousBookTags
         }
 
         SKSE::log::info("Loaded {} book rule(s) from {}; {} override(s)",
-            loaded, path.filename().string(), overridden);
+            loaded, sourceName, overridden);
         return true;
     }
 

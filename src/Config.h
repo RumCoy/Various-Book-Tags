@@ -4,6 +4,7 @@
 
 #include <cstdint>
 #include <filesystem>
+#include <iosfwd>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -27,8 +28,8 @@ namespace VariousBookTags
     public:
         static Config& GetSingleton();
 
-        bool Load(const std::filesystem::path& mainPath,
-            const std::filesystem::path& userPath);
+        bool Load(std::string_view embeddedInternalData,
+            const std::filesystem::path& userConfigPath);
 
         [[nodiscard]] bool Enabled() const noexcept;
         [[nodiscard]] bool ClassTagsEnabled() const noexcept;
@@ -38,7 +39,8 @@ namespace VariousBookTags
 
     private:
         void Reset();
-        bool LoadFile(const std::filesystem::path& path, bool optional);
+        bool LoadUserFile(const std::filesystem::path& path);
+        bool LoadStream(std::istream& input, std::string sourceName);
 
         bool enabled_{ true };
         bool classTagsEnabled_{ true };

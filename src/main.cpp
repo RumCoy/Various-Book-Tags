@@ -1,5 +1,6 @@
 #include "BookProcessor.h"
 #include "Config.h"
+#include "EmbeddedData.h"
 
 #include <SKSE/SKSE.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -31,9 +32,13 @@ namespace
             return;
         }
 
+        const auto internalData = VariousBookTags::EmbeddedData::GetInternalData();
+        if (internalData.empty()) {
+            SKSE::log::critical("Embedded internal-data resource is missing or empty");
+        }
+
         VariousBookTags::Config::GetSingleton().Load(
-            "Data/SKSE/Plugins/VariousBookTags_InternalData.ini",
-            "Data/SKSE/Plugins/VariousBookTags_UserConfig.ini");
+            internalData, "Data/SKSE/Plugins/VariousBookTags_UserConfig.ini");
         VariousBookTags::BookProcessor::Apply();
     }
 }

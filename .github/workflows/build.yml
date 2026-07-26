@@ -75,15 +75,21 @@ jobs:
         env:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: |
-          $packageSource = "zz. Mod Data - EDIT FILES HERE (Symlinked to MO2)/Data"
-          $userConfigSource = Join-Path $packageSource "SKSE/Plugins/VariousBookTags_UserConfig.ini"
+          $resourceSource = "resources"
+          $userConfigSource = Join-Path $resourceSource "VariousBookTags_UserConfig.ini"
 
           cmake --install build/release --config Release --prefix package/Data
           if (!(Test-Path package/Data/SKSE/Plugins/VariousBookTags.dll)) {
             throw "Expected packaged DLL was not produced: VariousBookTags.dll"
           }
-          if (!(Test-Path package/Data/SKSE/Plugins/VariousBookTags_InternalData.ini)) {
-            throw "Expected internal-data file was not packaged: VariousBookTags_InternalData.ini"
+          $dllBytes = [System.IO.File]::ReadAllBytes(
+            "package/Data/SKSE/Plugins/VariousBookTags.dll")
+          $dllText = [System.Text.Encoding]::Latin1.GetString($dllBytes)
+          if (!$dllText.Contains("[Plugin:Skyrim.esm]")) {
+            throw "Embedded internal-data marker was not found in VariousBookTags.dll"
+          }
+          if (Test-Path package/Data/SKSE/Plugins/VariousBookTags_InternalData.ini) {
+            throw "Internal data must be embedded in the DLL, not packaged as a separate INI"
           }
 
           $legalDirectory = "package/Data/Docs/Various Book Tags"
