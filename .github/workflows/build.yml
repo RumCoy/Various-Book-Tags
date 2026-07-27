@@ -76,6 +76,7 @@ jobs:
           VCPKG_ROOT: ${{ github.workspace }}\vcpkg
         run: |
           $resourceSource = "resources"
+          $internalDataSource = Join-Path $resourceSource "VariousBookTags_InternalData.ini"
           $userConfigSource = Join-Path $resourceSource "VariousBookTags_UserConfig.ini"
 
           cmake --install build/release --config Release --prefix package/Data
@@ -85,8 +86,14 @@ jobs:
           $dllBytes = [System.IO.File]::ReadAllBytes(
             "package/Data/SKSE/Plugins/VariousBookTags.dll")
           $dllText = [System.Text.Encoding]::Latin1.GetString($dllBytes)
-          if (!$dllText.Contains("[Plugin:Skyrim.esm]")) {
-            throw "Embedded internal-data marker was not found in VariousBookTags.dll"
+          $internalDataMarker = Get-Content -LiteralPath $internalDataSource |
+            Where-Object { $_ -match '^\[Plugin:.+\]$' } |
+            Select-Object -First 1
+          if (!$internalDataMarker) {
+            throw "Expected a plugin marker in $internalDataSource"
+          }
+          if (!$dllText.Contains($internalDataMarker)) {
+            throw "Embedded internal-data marker was not found in VariousBookTags.dll: $internalDataMarker"
           }
           if (Test-Path package/Data/SKSE/Plugins/VariousBookTags_InternalData.ini) {
             throw "Internal data must be embedded in the DLL, not packaged as a separate INI"
