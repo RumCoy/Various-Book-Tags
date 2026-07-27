@@ -24,17 +24,51 @@ namespace
                });
     }
 
-    bool IsVanillaMaster(std::string_view filename)
+    bool IsVanillaPlugin(std::string_view filename)
     {
-        static constexpr std::array masters{
+        static constexpr std::array vanillaPlugins{
             "Skyrim.esm"sv,
             "Update.esm"sv,
             "Dawnguard.esm"sv,
             "HearthFires.esm"sv,
-            "Dragonborn.esm"sv
+            "Dragonborn.esm"sv,
+            "ccasvsse001-almsivi.esm"sv,
+            "ccBGSSSE001-Fish.esm"sv,
+            "ccbgssse003-zombies.esl"sv,
+            "ccbgssse005-goldbrand.esl"sv,
+            "ccbgssse020-graycowl.esl"sv,
+            "cctwbsse001-puzzledungeon.esm"sv,
+            "cceejsse001-hstead.esm"sv,
+            "ccbgssse035-petnhound.esl"sv,
+            "ccvsvsse002-pets.esl"sv,
+            "ccbgssse034-mntuni.esm"sv,
+            "ccbgssse036-petbwolf.esl"sv,
+            "ccffbsse001-imperialdragon.esl"sv,
+            "ccmtysse002-ve.esl"sv,
+            "cceejsse003-hollow.esm"sv,
+            "ccbgssse031-advcyrus.esm"sv,
+            "ccbgssse038-bowofshadows.esl"sv,
+            "ccbgssse040-advobgobs.esl"sv,
+            "ccbgssse059-ba_dragonplate.esl"sv,
+            "ccbgssse041-netchleather.esl"sv,
+            "ccbgssse063-ba_ebony.esl"sv,
+            "ccbgssse055-ba_orcishscaled.esl"sv,
+            "ccbgssse051-ba_daedricmail.esl"sv,
+            "ccbgssse067-daedinv.esm"sv,
+            "ccbgssse068-bloodfall.esl"sv,
+            "ccbgssse069-contest.esl"sv,
+            "ccVSVSSE003-NecroArts.esl"sv,
+            "ccvsvsse004-beafarmer.esl"sv,
+            "ccbgssse025-advdsgs.esm"sv,
+            "ccrmssse001-necrohouse.esl"sv,
+            "ccedhsse003-redguard.esl"sv,
+            "cceejsse004-hall.esl"sv,
+            "cceejsse005-cave.esm"sv,
+            "cckrtsse001_altar.esl"sv,
+            "ccafdsse001-dwesanctuary.esm"sv
         };
-        return std::ranges::any_of(masters,
-            [filename](std::string_view master) { return EqualsIgnoreCase(filename, master); });
+        return std::ranges::any_of(vanillaPlugins,
+            [filename](std::string_view plugin) { return EqualsIgnoreCase(filename, plugin); });
     }
 
     std::string MakeFallbackTag(std::string_view filename)
@@ -151,8 +185,8 @@ namespace VariousBookTags::BookProcessor
             if (!provenance) {
                 continue;
             }
-            const bool vanilla = IsVanillaMaster(provenance->origin.filename);
-            Rule fallbackRule;
+            const bool vanilla = IsVanillaPlugin(provenance->origin.filename);
+            Rule implicitRule;
             const FormOrigin::Identity* tagIdentity = nullptr;
             const Rule* rule = nullptr;
             if (provenance->winner.file != provenance->origin.file) {
@@ -167,14 +201,18 @@ namespace VariousBookTags::BookProcessor
                     tagIdentity = std::addressof(provenance->origin);
                 }
             }
+            if (!rule && vanilla) {
+                rule = std::addressof(implicitRule);
+                tagIdentity = std::addressof(provenance->origin);
+            }
             bool usingFallback = false;
             if (!rule) {
-                if (!config.GlobalPluginNameFallbackEnabled() || vanilla) {
+                if (!config.GlobalPluginNameFallbackEnabled()) {
                     continue;
                 }
                 tagIdentity = std::addressof(provenance->winner);
-                fallbackRule.tag = MakeFallbackTag(tagIdentity->filename);
-                rule = &fallbackRule;
+                implicitRule.tag = MakeFallbackTag(tagIdentity->filename);
+                rule = &implicitRule;
                 usingFallback = true;
             }
             if (!tagIdentity || !rule->Allows(tagIdentity->localFormID)) {
