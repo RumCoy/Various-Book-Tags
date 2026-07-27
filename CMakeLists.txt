@@ -15,11 +15,56 @@ if(NOT COMMAND add_commonlibsse_plugin)
     include(lib/commonlibsse-ng/cmake/CommonLibSSE.cmake)
 endif()
 
-set(VBT_INTERNAL_DATA_SOURCE_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/resources/VariousBookTags_InternalData.ini")
 set(VBT_INTERNAL_DATA_PATH "${CMAKE_CURRENT_BINARY_DIR}/VariousBookTags_InternalData.ini")
 set(VBT_RESOURCE_HEADER_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/Resource.h")
-configure_file("${VBT_INTERNAL_DATA_SOURCE_PATH}" "${VBT_INTERNAL_DATA_PATH}" COPYONLY)
+set(VBT_INTERNAL_DATA_PREMERGED_PATH "" CACHE FILEPATH
+    "Optional premerged internal-data INI produced by CI")
+set(VBT_SHARED_PARENT_BASE_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/resources/SharedParentList_Base.ini")
+set(VBT_SHARED_PARENT_EDIT_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/resources/SharedParentList_EditHere.ini")
+set(VBT_CURATED_DATA_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/resources/VariousBookTags_Curated.ini")
+set(VBT_MERGE_SCRIPT_PATH
+    "${CMAKE_CURRENT_SOURCE_DIR}/scripts/Merge-TagLayers.ps1")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${VBT_SHARED_PARENT_BASE_PATH}"
+    "${VBT_SHARED_PARENT_EDIT_PATH}"
+    "${VBT_CURATED_DATA_PATH}"
+    "${VBT_MERGE_SCRIPT_PATH}"
+)
+
+if(VBT_INTERNAL_DATA_PREMERGED_PATH)
+    if(NOT EXISTS "${VBT_INTERNAL_DATA_PREMERGED_PATH}")
+        message(FATAL_ERROR
+            "Premerged internal-data INI not found: ${VBT_INTERNAL_DATA_PREMERGED_PATH}")
+    endif()
+    configure_file(
+        "${VBT_INTERNAL_DATA_PREMERGED_PATH}"
+        "${VBT_INTERNAL_DATA_PATH}"
+        COPYONLY
+    )
+else()
+    find_program(POWERSHELL_EXECUTABLE NAMES pwsh powershell REQUIRED)
+    execute_process(
+        COMMAND "${POWERSHELL_EXECUTABLE}"
+            -NoProfile
+            -ExecutionPolicy Bypass
+            -File "${VBT_MERGE_SCRIPT_PATH}"
+            -Product VBT
+            -BasePath "${VBT_SHARED_PARENT_BASE_PATH}"
+            -EditPath "${VBT_SHARED_PARENT_EDIT_PATH}"
+            -CuratedPath "${VBT_CURATED_DATA_PATH}"
+            -OutputPath "${VBT_INTERNAL_DATA_PATH}"
+        RESULT_VARIABLE VBT_MERGE_RESULT
+        OUTPUT_VARIABLE VBT_MERGE_OUTPUT
+        ERROR_VARIABLE VBT_MERGE_ERROR
+    )
+    if(NOT VBT_MERGE_RESULT EQUAL 0)
+        message(FATAL_ERROR
+            "Failed to merge VBT internal data:\n${VBT_MERGE_OUTPUT}\n${VBT_MERGE_ERROR}")
+    endif()
+endif()
 configure_file(
     src/VariousBookTags.rc.in
     "${CMAKE_CURRENT_BINARY_DIR}/VariousBookTags.rc"
