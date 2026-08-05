@@ -5,7 +5,7 @@ Changed {2026-08-01} (HMA) to (Hearthfire Multiple Adoptions): HearthfireMultiKi
 Changed {2026-08-01} (MTS) to (More to Say): moretosayriverwood.esp
 Changed {2026-08-01} (MTS) to (More to Say): moretosaywinterhold.esp
 Changed {2026-08-01} (TGC) to (The Great City): The Great City of Winterhold v4.esp
-Changed {2026-08-01} (YLVO) to (Young Lovers): YoungLovers-VoiceOverhaul.esp
+Changed 18+ {2026-08-01} (YLVO) to (Young Lovers): YoungLovers-VoiceOverhaul.esp
 Changed {2026-08-01} (Wizarding Traversal - Aimed) to (Wizarding Traversal): WizardingTraversalAimed.esl
 Added 18+ {2026-08-02} ChastityCages (Chastity Cages): ChastityCages.esp
 Added 18+ {2026-08-02} EggMania (Egg Mania): EggMania.esp
