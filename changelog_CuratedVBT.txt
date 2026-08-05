@@ -1,5 +1,5 @@
 VBT 2.0.1
-13 mods (6 added, 0 removed, 7 changed) for Curated VBT List:
+15 mods (8 added, 0 removed, 7 changed) for Curated VBT List:
 Changed {2026-08-01} (MTS) to (More To Say): moretodo.esp
 Changed {2026-08-01} (HMA) to (Hearthfire Multiple Adoptions): HearthfireMultiKid.esp
 Changed {2026-08-01} (MTS) to (More to Say): moretosayriverwood.esp
@@ -13,3 +13,5 @@ Added 18+ {2026-08-02} ZaForswornStory (Forsworn Story): ZaForswornStory.esp
 Added {2026-08-05} CWE_DialogueAddon (Capital Whiterun Quest Addon): CWE_DialogueAddon.esp
 Added 18+ {2026-08-05} Karlossos the Riekling (Karlossos the Riekling): Karlossos the Riekling.esp
 Added {2026-08-05} KittyClass_Dragonknight (Dragonknight's Tale): KittyClass_Dragonknight.esp
+Added {2026-08-05} Scriptures of the Dragon Cult (Scriptures of the Dragon Cult): Scriptures-of-the-Dragon-Cult.esp (https://www.nexusmods.com/skyrimspecialedition/mods/173764)
+Added {2026-08-05} The Cursed Tribe - Quest Expansion (TCTQE) (The Cursed Tribe): The Cursed Tribe - Quest Expansion.esp (https://www.nexusmods.com/skyrimspecialedition/mods/171220)
