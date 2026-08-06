@@ -15,7 +15,6 @@ Changed {2026-08-01} (MTS) to (More to Say): moretosayriverwood.esp
 Changed {2026-08-01} (MTS) to (More to Say): moretosaywinterhold.esp
 Changed {2026-08-01} (TGC) to (The Great City): The Great City of Winterhold v4.esp
 Changed {2026-08-01} (Wizarding Traversal - Aimed) to (Wizarding Traversal): WizardingTraversalAimed.esl
-Changed 18+ {2026-08-01} (YLVO) to (Young Lovers): YoungLovers-VoiceOverhaul.esp
 Changed 18+ {2026-08-06} content tracking for Damsels: Damsels Breeding Slaves.esp
 Changed 18+ {2026-08-06} content tracking for Ebonitium: Devious Arena.esp
 Changed 18+ {2026-08-06} content tracking for Devious Devices: Devious Devices - Assets.esm
@@ -28,9 +27,11 @@ Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysmaker-Addon-Toys-
 Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysmaker-Addon-Toys-Workshop.esp
 Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysMaker.esp
 Changed 18+ {2026-08-06} content tracking for And You Get a Slave: PAH_AndYouGetASlave.esp
+Changed 18+ {2026-08-06} (SLEN) to (SexLab Eager NPCs): SexLab Eager NPCs.esp
 Changed 18+ {2026-08-06} content tracking for Shout Like a Virgin: Shout Like a Virgin.esp
 Changed 18+ {2026-08-06} content tracking for Simple Slavery: SimpleSlavery.esp
 Changed 18+ {2026-08-06} content tracking for Slavers of Skyrim: SlaversOfSkyrim.esm
 Changed 18+ {2026-08-06} content tracking for Slaverun: Slaverun_Reloaded.esp
 Changed 18+ {2026-08-06} content tracking for Toy Story: ToyStory.esp
 Changed 18+ {2026-08-06} content tracking for Toys Workshop: ToysWorkshop.esp
+Changed 18+ {2026-08-01} (YLVO) to (Young Lovers): YoungLovers-VoiceOverhaul.esp
