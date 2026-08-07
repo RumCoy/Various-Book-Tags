@@ -1,5 +1,5 @@
 VBT 2.0.1
-35 mods (9 added, 0 removed, 26 changed) for Curated VBT List:
+17 mods (9 added, 0 removed, 8 changed) for Curated VBT List:
 Added {2026-08-05} CWE_DialogueAddon (Capital Whiterun Quest Addon): CWE_DialogueAddon.esp
 Added {2026-08-05} KittyClass_Dragonknight (Dragonknight's Tale): KittyClass_Dragonknight.esp
 Added {2026-08-05} Scriptures of the Dragon Cult (Scriptures of the Dragon Cult): Scriptures-of-the-Dragon-Cult.esp (https://www.nexusmods.com/skyrimspecialedition/mods/173764)
@@ -15,23 +15,31 @@ Changed {2026-08-01} (MTS) to (More to Say): moretosayriverwood.esp
 Changed {2026-08-01} (MTS) to (More to Say): moretosaywinterhold.esp
 Changed {2026-08-01} (TGC) to (The Great City): The Great City of Winterhold v4.esp
 Changed {2026-08-01} (Wizarding Traversal - Aimed) to (Wizarding Traversal): WizardingTraversalAimed.esl
+Changed 18+ {2026-08-06} (SLEN) to (SexLab Eager NPCs): SexLab Eager NPCs.esp
+Changed 18+ {2026-08-01} (YLVO) to (Young Lovers): YoungLovers-VoiceOverhaul.esp
+Changed 18+ {2026-08-07} content tracking for (Alicia Painslut): AliciaPainSlut.esp
+Changed 18+ {2026-08-07} content tracking for (Bloodwhore): Curses of the BloodWhore.esp
 Changed 18+ {2026-08-06} content tracking for Damsels: Damsels Breeding Slaves.esp
+Changed 18+ {2026-08-07} content tracking for (Damsels): Damsels Desired Prize.esp
+Changed 18+ {2026-08-07} content tracking for (Damsels): Damsels in Distress.esp
+Changed 18+ {2026-08-07} content tracking for (Circle of Lust): DarkDesiresCircleOfLust.esp
 Changed 18+ {2026-08-06} content tracking for Ebonitium: Devious Arena.esp
 Changed 18+ {2026-08-06} content tracking for Devious Devices: Devious Devices - Assets.esm
 Changed 18+ {2026-08-06} content tracking for Devious Devices: Devious Devices - Expansion.esm
 Changed 18+ {2026-08-06} content tracking for Devious Devices: Devious Devices - Integration.esm
 Changed 18+ {2026-08-06} content tracking for Devious Newcomer: Devious Newcomer.esp
 Changed 18+ {2026-08-06} content tracking for Deviously Cursed: Deviously Cursed Loot.esp
+Changed 18+ {2026-08-07} content tracking for (Diary of Mine): DiaryOfMine.esm
+Changed 18+ {2026-08-07} content tracking for (Thief): Dogma - Thief.esp
 Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysmaker-Addon-Toys-SLAVE.esp
 Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysmaker-Addon-Toys-Story.esp
 Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysmaker-Addon-Toys-Workshop.esp
 Changed 18+ {2026-08-06} content tracking for Toy Maker: NSToysMaker.esp
 Changed 18+ {2026-08-06} content tracking for And You Get a Slave: PAH_AndYouGetASlave.esp
-Changed 18+ {2026-08-06} (SLEN) to (SexLab Eager NPCs): SexLab Eager NPCs.esp
+Changed 18+ {2026-08-07} content tracking for (Public Whore): Public Whore.esp
 Changed 18+ {2026-08-06} content tracking for Shout Like a Virgin: Shout Like a Virgin.esp
 Changed 18+ {2026-08-06} content tracking for Simple Slavery: SimpleSlavery.esp
 Changed 18+ {2026-08-06} content tracking for Slavers of Skyrim: SlaversOfSkyrim.esm
 Changed 18+ {2026-08-06} content tracking for Slaverun: Slaverun_Reloaded.esp
 Changed 18+ {2026-08-06} content tracking for Toy Story: ToyStory.esp
 Changed 18+ {2026-08-06} content tracking for Toys Workshop: ToysWorkshop.esp
-Changed 18+ {2026-08-01} (YLVO) to (Young Lovers): YoungLovers-VoiceOverhaul.esp
