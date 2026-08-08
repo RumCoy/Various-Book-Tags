@@ -3,6 +3,7 @@
 #include "BookProcessor.h"
 #include "Config.h"
 
+#include <utility>
 #include <Windows.h>
 
 namespace VariousBookTags::Menu
@@ -54,7 +55,7 @@ namespace VariousBookTags::Menu
             }
         }
 
-        void QueueSettingsUpdate(MenuSettings settings)
+        void QueueSettingsUpdate(MenuSettingsUpdate update)
         {
             auto* tasks = SKSE::GetTaskInterface();
             if (!tasks) {
@@ -62,14 +63,10 @@ namespace VariousBookTags::Menu
                 return;
             }
 
-            tasks->AddTask([settings]() {
+            tasks->AddTask([update = std::move(update)]() {
                 auto& config = Config::GetSingleton();
-                config.SetEnabled(settings.enabled);
-                config.SetSkillTagsEnabled(settings.skillTags);
-                config.SetModNameTagsEnabled(settings.modNameTags);
-                config.SetGlobalPluginNameFallbackEnabled(settings.fallback);
-                if (!config.SaveTempCache()) {
-                    SKSE::log::error("Settings write failed");
+                if (!config.ApplyMenuSettings(update)) {
+                    SKSE::log::error("Failed to persist one or more menu setting files");
                 }
                 BookProcessor::Apply();
             });
@@ -88,22 +85,24 @@ namespace VariousBookTags::Menu
                 initialized = true;
             }
 
-            bool changed = false;
+            MenuSettingsUpdate update;
             if (Checkbox("Enable Various Book Tags", &settings.enabled)) {
-                changed = true;
+                update.enabled = settings.enabled;
             }
             if (Checkbox("Enable skill and spell-school tags", &settings.skillTags)) {
-                changed = true;
+                update.skillTags = settings.skillTags;
             }
             if (Checkbox("Enable mod-name tags", &settings.modNameTags)) {
-                changed = true;
+                update.modNameTags = settings.modNameTags;
             }
             if (Checkbox("Tag unconfigured mods with plugin names", &settings.fallback)) {
-                changed = true;
+                update.globalPluginNameFallback = settings.fallback;
             }
             Text("Uses the plugin filename as the tag for books from unconfigured non-vanilla plugins.");
-            if (changed) {
-                QueueSettingsUpdate(settings);
+            if (update.enabled.has_value() || update.skillTags.has_value() ||
+                update.modNameTags.has_value() ||
+                update.globalPluginNameFallback.has_value()) {
+                QueueSettingsUpdate(std::move(update));
             }
         }
     }
