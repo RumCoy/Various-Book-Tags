@@ -13,6 +13,7 @@ namespace VariousBookTags::Menu
         using AddSectionItemFunction = void (*)(const char*, RenderFunction);
         using CheckboxFunction = bool (*)(const char*, bool*);
         using GetVersionFunction = float (*)();
+        using TextUnformattedFunction = void (*)(const char*, const char*);
 
         struct MenuSettings
         {
@@ -42,6 +43,15 @@ namespace VariousBookTags::Menu
         {
             static const auto function = GetFrameworkFunction<CheckboxFunction>("igCheckbox");
             return function && function(label, value);
+        }
+
+        void Text(const char* value)
+        {
+            static const auto function =
+                GetFrameworkFunction<TextUnformattedFunction>("igTextUnformatted");
+            if (function) {
+                function(value, nullptr);
+            }
         }
 
         void QueueSettingsUpdate(MenuSettings settings)
@@ -91,6 +101,7 @@ namespace VariousBookTags::Menu
             if (Checkbox("Tag unconfigured mods with plugin names", &settings.fallback)) {
                 changed = true;
             }
+            Text("Uses the plugin filename as the tag for books from unconfigured non-vanilla plugins.");
             if (changed) {
                 QueueSettingsUpdate(settings);
             }
@@ -113,7 +124,8 @@ namespace VariousBookTags::Menu
         const auto addSectionItem =
             GetFrameworkFunction<AddSectionItemFunction>("AddSectionItem");
         const auto checkbox = GetFrameworkFunction<CheckboxFunction>("igCheckbox");
-        if (!getVersion || !addSectionItem || !checkbox) {
+        const auto text = GetFrameworkFunction<TextUnformattedFunction>("igTextUnformatted");
+        if (!getVersion || !addSectionItem || !checkbox || !text) {
             SKSE::log::warn("SKSEMF API unavailable");
             return;
         }
