@@ -143,6 +143,10 @@ namespace VariousBookTags
 
     bool Config::LoadTempCache(const std::filesystem::path& path)
     {
+        if (path.empty()) {
+            return false;
+        }
+
         std::ifstream input(path);
         if (!input) {
             return false;

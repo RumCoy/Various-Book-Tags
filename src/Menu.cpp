@@ -85,6 +85,12 @@ namespace VariousBookTags::Menu
         }
     }
 
+    bool IsAvailable()
+    {
+        return SKSEMenuFramework::IsInstalled() &&
+               SKSEMenuFramework::GetMenuFrameworkVersion() > 0.0F;
+    }
+
     void Register()
     {
         static bool registered = false;
@@ -92,11 +98,8 @@ namespace VariousBookTags::Menu
             return;
         }
 
-        if (!SKSEMenuFramework::IsInstalled()) {
-            return;
-        }
-
-        if (SKSEMenuFramework::GetMenuFrameworkVersion() <= 0.0F) {
+        if (!IsAvailable()) {
+            SKSE::log::info("SKSE Menu Framework unavailable; menu integration disabled");
             return;
         }
 

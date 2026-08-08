@@ -2,5 +2,6 @@
 
 namespace VariousBookTags::Menu
 {
+    [[nodiscard]] bool IsAvailable();
     void Register();
 }

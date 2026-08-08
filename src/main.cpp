@@ -38,10 +38,18 @@ namespace
             SKSE::log::critical("Embedded internal-data resource is missing or empty");
         }
 
+        std::filesystem::path tempCachePath;
+        if (VariousBookTags::Menu::IsAvailable()) {
+            tempCachePath = "Data/SKSE/Plugins/VariousBookTags_tempCache.ini";
+        } else {
+            SKSE::log::info(
+                "SKSE Menu Framework unavailable; existing temp cache will be ignored");
+        }
+
         VariousBookTags::Config::GetSingleton().Load(
             internalData,
             "Data/SKSE/Plugins/VariousBookTags_UserConfig.ini",
-            "Data/SKSE/Plugins/VariousBookTags_tempCache.ini");
+            tempCachePath);
         VariousBookTags::BookProcessor::Apply();
         VariousBookTags::Menu::Register();
     }
