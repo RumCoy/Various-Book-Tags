@@ -1,6 +1,7 @@
 #include "BookProcessor.h"
 #include "Config.h"
 #include "EmbeddedData.h"
+#include "Menu.h"
 
 #include <SKSE/SKSE.h>
 #include <spdlog/sinks/basic_file_sink.h>
@@ -38,8 +39,11 @@ namespace
         }
 
         VariousBookTags::Config::GetSingleton().Load(
-            internalData, "Data/SKSE/Plugins/VariousBookTags_UserConfig.ini");
+            internalData,
+            "Data/SKSE/Plugins/VariousBookTags_UserConfig.ini",
+            "Data/SKSE/Plugins/VariousBookTags_tempCache.ini");
         VariousBookTags::BookProcessor::Apply();
+        VariousBookTags::Menu::Register();
     }
 }
 

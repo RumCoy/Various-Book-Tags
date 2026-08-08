@@ -29,23 +29,32 @@ namespace VariousBookTags
         static Config& GetSingleton();
 
         bool Load(std::string_view embeddedInternalData,
-            const std::filesystem::path& userConfigPath);
+            const std::filesystem::path& userConfigPath,
+            const std::filesystem::path& tempCachePath);
 
         [[nodiscard]] bool Enabled() const noexcept;
+        void SetEnabled(bool enabled) noexcept;
         [[nodiscard]] bool SkillTagsEnabled() const noexcept;
+        void SetSkillTagsEnabled(bool enabled) noexcept;
         [[nodiscard]] bool ModNameTagsEnabled() const noexcept;
+        void SetModNameTagsEnabled(bool enabled) noexcept;
         [[nodiscard]] bool GlobalPluginNameFallbackEnabled() const noexcept;
+        void SetGlobalPluginNameFallbackEnabled(bool enabled) noexcept;
+        [[nodiscard]] bool SaveTempCache() const;
         [[nodiscard]] const Rule* FindRule(std::string_view pluginName) const;
 
     private:
         void Reset();
         bool LoadUserFile(const std::filesystem::path& path);
-        bool LoadStream(std::istream& input, std::string sourceName);
+        bool LoadTempCache(const std::filesystem::path& path);
+        bool LoadStream(std::istream& input, std::string sourceName,
+            bool loadPluginRules = true);
 
         bool enabled_{ true };
         bool skillTagsEnabled_{ true };
         bool modNameTagsEnabled_{ true };
         bool globalPluginNameFallbackEnabled_{ false };
+        std::filesystem::path tempCachePath_;
         std::unordered_map<std::string, Rule> rules_;
     };
 }

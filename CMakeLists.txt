@@ -81,6 +81,8 @@ add_commonlibsse_plugin(${PROJECT_NAME}
         src/BookProcessor.h
         src/Config.cpp
         src/Config.h
+        src/Menu.cpp
+        src/Menu.h
         src/EmbeddedData.cpp
         src/EmbeddedData.h
         src/FormOrigin.cpp

@@ -107,21 +107,24 @@ namespace VariousBookTags
     }
 
     bool Config::Load(std::string_view embeddedInternalData,
-        const std::filesystem::path& userConfigPath)
+        const std::filesystem::path& userConfigPath,
+        const std::filesystem::path& tempCachePath)
     {
         Reset();
+        tempCachePath_ = tempCachePath;
 
         std::istringstream internalDataInput{ std::string(embeddedInternalData) };
         const bool loadedEmbeddedData = embeddedInternalData.empty() ?
             false : LoadStream(internalDataInput, "embedded internal data");
         const bool loadedUserConfig = LoadUserFile(userConfigPath);
+        const bool loadedTempCache = LoadTempCache(tempCachePath_);
 
         SKSE::log::info(
-            "Configuration complete: {} book rule(s); enabled={}; skillTags={}; modNameTags={}; globalPluginNameFallback={}; embeddedData={}; userConfig={}",
+            "Configuration complete: {} book rule(s); enabled={}; skillTags={}; modNameTags={}; globalPluginNameFallback={}; embeddedData={}; userConfig={}; tempCache={}",
             rules_.size(), enabled_, skillTagsEnabled_,
             modNameTagsEnabled_, globalPluginNameFallbackEnabled_,
-            loadedEmbeddedData, loadedUserConfig);
-        return loadedEmbeddedData || loadedUserConfig;
+            loadedEmbeddedData, loadedUserConfig, loadedTempCache);
+        return loadedEmbeddedData || loadedUserConfig || loadedTempCache;
     }
 
     bool Config::LoadUserFile(const std::filesystem::path& path)
@@ -135,7 +138,18 @@ namespace VariousBookTags
         return LoadStream(input, path.filename().string());
     }
 
-    bool Config::LoadStream(std::istream& input, std::string sourceName)
+    bool Config::LoadTempCache(const std::filesystem::path& path)
+    {
+        std::ifstream input(path);
+        if (!input) {
+            return false;
+        }
+
+        return LoadStream(input, path.filename().string(), false);
+    }
+
+    bool Config::LoadStream(std::istream& input, std::string sourceName,
+        bool loadPluginRules)
     {
         std::unordered_map<std::string, Rule> fileRules;
         enum class Section { kOther, kGeneral, kPlugin };
@@ -158,7 +172,7 @@ namespace VariousBookTags
                 constexpr std::string_view prefix = "plugin:";
                 if (lowered == "general") {
                     activeSection = Section::kGeneral;
-                } else if (lowered.starts_with(prefix)) {
+                } else if (loadPluginRules && lowered.starts_with(prefix)) {
                     auto pluginName = Trim(section.substr(prefix.size()));
                     if (!pluginName.empty()) {
                         auto result = fileRules.insert_or_assign(Lower(pluginName), Rule{});
@@ -231,9 +245,19 @@ namespace VariousBookTags
         return enabled_;
     }
 
+    void Config::SetEnabled(bool enabled) noexcept
+    {
+        enabled_ = enabled;
+    }
+
     bool Config::SkillTagsEnabled() const noexcept
     {
         return skillTagsEnabled_;
+    }
+
+    void Config::SetSkillTagsEnabled(bool enabled) noexcept
+    {
+        skillTagsEnabled_ = enabled;
     }
 
     bool Config::ModNameTagsEnabled() const noexcept
@@ -241,9 +265,41 @@ namespace VariousBookTags
         return modNameTagsEnabled_;
     }
 
+    void Config::SetModNameTagsEnabled(bool enabled) noexcept
+    {
+        modNameTagsEnabled_ = enabled;
+    }
+
     bool Config::GlobalPluginNameFallbackEnabled() const noexcept
     {
         return globalPluginNameFallbackEnabled_;
+    }
+
+    void Config::SetGlobalPluginNameFallbackEnabled(bool enabled) noexcept
+    {
+        globalPluginNameFallbackEnabled_ = enabled;
+    }
+
+    bool Config::SaveTempCache() const
+    {
+        if (tempCachePath_.empty()) {
+            return false;
+        }
+
+        std::ofstream output(tempCachePath_, std::ios::trunc);
+        if (!output) {
+            return false;
+        }
+
+        output
+            << "[General]\n"
+            << "Enabled = " << (Enabled() ? "true" : "false") << '\n'
+            << "SkillTags = " << (SkillTagsEnabled() ? "true" : "false") << '\n'
+            << "ModNameTags = " << (ModNameTagsEnabled() ? "true" : "false") << '\n'
+            << "GlobalPluginNameFallback = "
+            << (GlobalPluginNameFallbackEnabled() ? "true" : "false") << '\n';
+
+        return static_cast<bool>(output);
     }
 
     const Rule* Config::FindRule(std::string_view pluginName) const

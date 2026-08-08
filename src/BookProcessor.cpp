@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <utility>
 
 namespace
@@ -145,6 +146,49 @@ namespace
         }
         return {};
     }
+
+    struct NameState
+    {
+        std::string baseName;
+        std::string appliedName;
+    };
+
+    std::unordered_map<RE::TESObjectBOOK*, NameState> nameStates;
+
+    std::size_t RestoreBaseNames(RE::TESDataHandler* dataHandler)
+    {
+        std::size_t restored = 0;
+        for (auto* book : dataHandler->GetFormArray<RE::TESObjectBOOK>()) {
+            if (!book) {
+                continue;
+            }
+
+            const char* currentName = book->GetFullName();
+            if (!currentName) {
+                continue;
+            }
+
+            auto [entry, inserted] = nameStates.try_emplace(
+                book, NameState{ currentName, currentName });
+            auto& state = entry->second;
+            if (!inserted && currentName != state.appliedName) {
+                state.baseName = currentName;
+            }
+            if (currentName != state.baseName) {
+                book->fullName = state.baseName;
+                ++restored;
+            }
+            state.appliedName = state.baseName;
+        }
+        return restored;
+    }
+
+    void RememberAppliedName(RE::TESObjectBOOK* book, std::string_view name)
+    {
+        if (const auto found = nameStates.find(book); found != nameStates.end()) {
+            found->second.appliedName = name;
+        }
+    }
 }
 
 namespace VariousBookTags::BookProcessor
@@ -152,14 +196,15 @@ namespace VariousBookTags::BookProcessor
     void Apply()
     {
         auto& config = Config::GetSingleton();
-        if (!config.Enabled()) {
-            SKSE::log::info("Book tagging is disabled");
-            return;
-        }
-
         auto* dataHandler = RE::TESDataHandler::GetSingleton();
         if (!dataHandler) {
             SKSE::log::critical("Unable to access TESDataHandler");
+            return;
+        }
+
+        const std::size_t restored = RestoreBaseNames(dataHandler);
+        if (!config.Enabled()) {
+            SKSE::log::info("Book tagging disabled: restored={}", restored);
             return;
         }
 
@@ -246,6 +291,7 @@ namespace VariousBookTags::BookProcessor
             AppendTag(output, skillTag.text);
             AppendTag(output, modNameTag);
             book->fullName = output;
+            RememberAppliedName(book, output);
             ++changed;
             if (!skillTag.text.empty()) {
                 skillTag.spell ? ++spellTagged : ++skillTagged;
@@ -262,7 +308,8 @@ namespace VariousBookTags::BookProcessor
         }
 
         SKSE::log::info(
-            "Book processing complete: inspected={}; changed={}; skill={}; spell={}; modName={}; fallback={}",
-            inspected, changed, skillTagged, spellTagged, modNameTagged, fallbackTagged);
+            "Book processing complete: inspected={}; restored={}; changed={}; skill={}; spell={}; modName={}; fallback={}",
+            inspected, restored, changed, skillTagged, spellTagged,
+            modNameTagged, fallbackTagged);
     }
 }
