@@ -101,7 +101,7 @@ namespace VariousBookTags::Menu
         }
 
         SKSEMenuFramework::SetSection("Various Book Tags");
-        SKSEMenuFramework::AddSectionItem("General", RenderSettings);
+        SKSEMenuFramework::AddSectionItem("Home", RenderSettings);
         registered = true;
     }
 }

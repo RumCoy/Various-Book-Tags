@@ -1,6 +1,8 @@
 VBT 2.0.1
-17 mods (9 added, 0 removed, 8 changed) for Curated VBT List:
+20 mods (11 added, 0 removed, 8 changed) for Curated VBT List:
 Added {2026-08-05} CWE_DialogueAddon (Capital Whiterun Quest Addon): CWE_DialogueAddon.esp
+Added {2026-08-08} (Dark Brotherhood Expansion): Destroy the Dark Brotherhood - Quest Expansion.esp
+Added {2026-08-08} (Dark Warrior's Tale): KittyClass_DarkWarrior.esp
 Added {2026-08-05} KittyClass_Dragonknight (Dragonknight's Tale): KittyClass_Dragonknight.esp
 Added {2026-08-05} Scriptures of the Dragon Cult (Scriptures of the Dragon Cult): Scriptures-of-the-Dragon-Cult.esp (https://www.nexusmods.com/skyrimspecialedition/mods/173764)
 Added {2026-08-05} The Cursed Tribe - Quest Expansion (TCTQE) (The Cursed Tribe): The Cursed Tribe - Quest Expansion.esp (https://www.nexusmods.com/skyrimspecialedition/mods/171220)
