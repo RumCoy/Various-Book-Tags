@@ -1,4 +1,4 @@
-VBT 2.0.1
+VBT 2.1.0
 20 mods (11 added, 0 removed, 8 changed) for Curated VBT List:
 Added {2026-08-05} CWE_DialogueAddon (Capital Whiterun Quest Addon): CWE_DialogueAddon.esp
 Added {2026-08-08} (Dark Brotherhood Expansion): Destroy the Dark Brotherhood - Quest Expansion.esp
