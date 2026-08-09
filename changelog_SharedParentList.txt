@@ -1,5 +1,6 @@
-SharedParentList 5.2.0
-1 mods (1 added, 0 removed, 0 changed) for SharedParentList:
+SharedParentList 5.2.1
+2 mods (2 added, 0 removed, 0 changed) for SharedParentList:
+Added {2026-08-08} Midnight Sun [Midnight Sun]: Midnight Sun.esm (https://www.nexusmods.com/skyrimspecialedition/mods/163295)
 Added 18+ {2026-08-08} [MEI]: MEI - Maven Elenwen Ingun.esp
 
 SharedParentList 5.1.0
