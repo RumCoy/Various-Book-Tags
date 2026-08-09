@@ -21,15 +21,12 @@ set(VBT_INTERNAL_DATA_PREMERGED_PATH "" CACHE FILEPATH
     "Optional premerged internal-data INI produced by CI")
 set(VBT_SHARED_PARENT_BASE_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/resources/SharedParentList_Base.ini")
-set(VBT_SHARED_PARENT_EDIT_PATH
-    "${CMAKE_CURRENT_SOURCE_DIR}/resources/SharedParentList_EditHere.ini")
 set(VBT_CURATED_DATA_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/resources/VariousBookTags_Curated.ini")
 set(VBT_MERGE_SCRIPT_PATH
     "${CMAKE_CURRENT_SOURCE_DIR}/scripts/Merge-TagLayers.ps1")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${VBT_SHARED_PARENT_BASE_PATH}"
-    "${VBT_SHARED_PARENT_EDIT_PATH}"
     "${VBT_CURATED_DATA_PATH}"
     "${VBT_MERGE_SCRIPT_PATH}"
 )
@@ -53,7 +50,6 @@ else()
             -File "${VBT_MERGE_SCRIPT_PATH}"
             -Product VBT
             -BasePath "${VBT_SHARED_PARENT_BASE_PATH}"
-            -EditPath "${VBT_SHARED_PARENT_EDIT_PATH}"
             -CuratedPath "${VBT_CURATED_DATA_PATH}"
             -OutputPath "${VBT_INTERNAL_DATA_PATH}"
         RESULT_VARIABLE VBT_MERGE_RESULT
