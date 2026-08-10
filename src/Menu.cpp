@@ -59,14 +59,14 @@ namespace VariousBookTags::Menu
             }
             if (ImGuiMCP::IsItemHovered(0)) {
                 ImGuiMCP::SetTooltip(
-                    "DEFAULT: ON. Tags such as (Restoration) or (Archery).");
+                    "DEFAULT: ON. Tags such as (Restoration) or (Archery)");
             }
             if (ImGuiMCP::Checkbox("Enable mod-name tags", &settings.modNameTags)) {
                 update.modNameTags = settings.modNameTags;
             }
             if (ImGuiMCP::IsItemHovered(0)) {
                 ImGuiMCP::SetTooltip(
-                    "DEFAULT: ON. Tags such as (Little Library) or (Immersive College).");
+                    "DEFAULT: ON. Tags such as (Little Library) or (Immersive College)");
             }
             if (ImGuiMCP::Checkbox(
                     "Tag unconfigured mods with plugin names", &settings.fallback)) {
@@ -74,7 +74,7 @@ namespace VariousBookTags::Menu
             }
             if (ImGuiMCP::IsItemHovered(0)) {
                 ImGuiMCP::SetTooltip(
-                    "DEFAULT: OFF. Uses the plugin filename as the tag for books from unconfigured non-vanilla plugins.");
+                    "DEFAULT: OFF. Uses the plugin filename as the tag for books from unconfigured non-vanilla plugins");
             }
             if (update.enabled.has_value() || update.skillTags.has_value() ||
                 update.modNameTags.has_value() ||
