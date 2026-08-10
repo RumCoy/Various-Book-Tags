@@ -1,6 +1,13 @@
-===== Various Book Tags original-code license (0BSD) =====
-Various Book Tags
-Copyright (C) 2026 Various Book Tags contributors
+# BSD Zero Clause License (SPDX: 0BSD)
+
+Various Book Tags statically links CommonLibSSE-NG v5.1.0. CommonLibSSE-NG
+is licensed under GPL-3.0-or-later with the exceptions supplied in
+lib/commonlibsse-ng/EXCEPTIONS.md.
+
+This license applies only to code authored for Various Book Tags.
+Third-party components retain their respective licenses.
+
+Copyright (c) 2026 Various Book Tags
 
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted.
@@ -12,11 +19,3 @@ ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
 WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
 ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
 OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
-
-This license applies only to original code authored for Various Book Tags.
-Third-party components retain their respective licenses, as documented in
-the following sections.
-
-This program statically links CommonLibSSE-NG v5.1.0. CommonLibSSE-NG is
-licensed under GPL-3.0-or-later with the exceptions supplied in
-lib/commonlibsse-ng/EXCEPTIONS.md.
