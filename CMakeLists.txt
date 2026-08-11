@@ -68,7 +68,7 @@ configure_file(
 )
 
 add_commonlibsse_plugin(${PROJECT_NAME}
-    NAME "Various Book Tags"
+    NAME "VariousBookTags"
     AUTHOR "Various Book Tags contributors"
     SOURCES
         src/main.cpp
