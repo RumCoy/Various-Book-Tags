@@ -1,8 +1,11 @@
 VBT 2.1.1
-1 mods (1 added, 0 removed, 0 changed, 2 migrated out) for Curated VBT List:
+4 mods (4 added, 0 removed, 0 changed, 2 migrated out) for Curated VBT List:
 Added {2026-08-09} Starfall (Starfall): Starfall.esp (https://www.nexusmods.com/skyrimspecialedition/mods/186814)
+Added {2026-08-12} DeathMagic (Death Magic): DeathMagic.esp
 Migrated out {2026-08-11} from Curated VDT List [Undeath] + Curated VBT List (Undeath) to SharedParentList [Undeath]: Undeath.esp
 Migrated out {2026-08-11} from Curated VBT List (Undeath) to SharedParentList [Undeath]: UndeathFixes.esp
+Added 18+ {2026-08-12} [SBOD] Book of Depravity (Book of Depravity): [SBOD] Book of Depravity.esp
+Added 18+ {2026-08-12} StickyMagic (Sticky Magic): StickyMagic.esp
 
 VBT 2.1.0
 19 mods (11 added, 0 removed, 8 changed) for Curated VBT List:
