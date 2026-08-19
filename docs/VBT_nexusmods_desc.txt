@@ -1,0 +1,92 @@
+[url=https://github.com/alandtse/CommonLibSSE-NG]SKSE plugin[/url] for [b][color=#f1c232]SE[/color][/b] 1.5.97, [b][color=#f1c232]AE[/color][/b] 1.6.x, and [b][color=#f1c232]VR[/color][/b]. Tested on 1.6.1170.
+
+[b][color=#f1c232]Requirements[/color][/b]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/30379]Skyrim Script Extender (SKSE64)[/url]﻿ [b][color=#f1c232](Required)[/color][/b]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/32444]Address Library for SKSE Plugins[/url]﻿ [b][color=#f1c232](Required)[/color][/b]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url]﻿ (Optional, to [b][color=#a4c2f4]hide tags while in-game[/color][/b])
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] More information in [b][color=#f1c232]Installation[/color][/b] below
+
+[b][color=#f1c232]Compatibility[/color][/b]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] Safe to enable/disable at any time during your save
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] [b][color=#a4c2f4]Compatible with everything[/color][/b]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] Built-in tags for over [b][color=#f1c232]300 mods[/color][/b], optional automatic tags for all others
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] More information in [b][color=#f1c232]Information[/color][/b] and [b][color=#f1c232]Compatibility[/color][/b] below
+
+[b][color=#a4c2f4]My Other Mods[/color][/b]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/103920]Various Dialogue Tags (VDT)[/url]
+[font=Tahoma][color=#f1c232]   ﻿✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/141632]Skyrim Autocorrect (SKAU)[/url]﻿
+
+[center][img]https://staticdelivery.nexusmods.com/mods/1704/images/63625/63625-1676996761-82027629.png[/img][/center]
+Intended as a(nother) niche mod, originally meant to help keep track of [url=https://en.uesp.net/wiki/Skyrim:Skill_Books]Skill Books[/url], and to help keep track of which mod a spell tome or book is associated with. Now, if you're not bothered by [b]book tags[/b], VBT will let you easily see which mod is associated with [i]that[/i] 'Note.'
+
+Inspired by KrisV777's [url=https://www.nexusmods.com/skyrimspecialedition/mods/135618]Dynamic Dialogue Replacer (DDR)[/url] and SkyHorizon's [url=https://www.nexusmods.com/skyrimspecialedition/mods/107676]Dynamic String Distributor (DSD)[/url], VBT dynamically adds tags to books at runtime, avoiding the risks associated with editing plugins/ESPs. This allows VBT to be [b][color=#a4c2f4]compatible with everything[/color][/b]. (Hooray!)
+
+By default, VBT only tags mods explicitly supported by the curated built-in list, or by the optional [b]User Config[/b]. The Config also allows you to [b][color=#a4c2f4]automatically tag every mod-added book[/color][/b] (this is disabled by default). Alternatively, [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] allows you to control the presence of tags (including skill tags & automatically-generated tags) without needing to use the optional Config file.
+
+[center][img]https://staticdelivery.nexusmods.com/mods/1704/images/63625/63625-1676996774-1699634888.png[/img][/center]
+Inspired by Kevkas's [url=https://www.nexusmods.com/skyrimspecialedition/mods/5260]Better Skill and Quest Books Names[/url]﻿ and olioster's [url=https://www.nexusmods.com/skyrimspecialedition/mods/32721]Better Skill and Quest Books Names - Consistency Patches[/url], VBT similarly tags associated skill bonuses for both vanilla and mod-added books, [b][color=#a4c2f4]for all tagged mods[/color][/b].
+
+VBT is an SKSE plugin, with [url=https://github.com/RumCoy/Various-Book-Tags]source code available on GitHub[/url]. While it comes with its own curated built-in list of 300+ mods, players can override, change, or otherwise add additional mods via [b]VariousBookTags_UserConfig.ini[/b]. The optional Config is separate from the main download, allowing you to easily maintain your own changes and additions.
+
+[b][color=#a4c2f4]Automatic tags for any and every mod are now available![/color][/b] An option for players trying to trace a particular book/note, or for those who don't care about having only curated tags: VBT now allows mod books to be automatically tagged with the mod's plugin name if a curated/user-defined tag does not already exist. This option is disabled by default. Navigate to [i]SKSE\Plugins\VariousBooksTags_UserConfig.ini[/i] and set [i]GlobalPluginNameFallback=true[/i] to enable. Alternatively (and easier-tively), [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is now also natively supported—[url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is completely optional, but it will allow you to freely hide or show tags (skill tags, automatically-generated, etc.) while in-game.
+
+
+[font=Arial][size=5][b][color=#f1c232]Built-In Support[/color][/b][/size][/font]
+The main file includes curated tags for more than 300 mods. Below are a few examples.
+These mods have a notable number of [b][color=#f1c232]Skill Books[/color][/b] now appropriately tagged:
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/902]Book Covers Skyrim - Lost Library[/url] and [url=https://www.nexusmods.com/skyrimspecialedition/mods/70272]Book Covers Skyrim - Lost Library REDUX[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/121654]Apocryphal Library[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/11849]VIGILANT SE[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/11789]Unslaad SE[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/32998]Glenmoril[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/12812]Narrative Loot[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/11729]The Elder Scrolls Online Imports[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/17004]Immersive College of Winterhold[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/50641]Magpie's Immersion Books AIO[/url] or any of their standalone mods
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/54207]Heim - Smithing Tweaks and Lightweight Overhaul[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/10810]More Books Please[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] Books from [b][color=#a4c2f4]vanilla/CC content[/color][/b]
+
+[b][color=#f1c232]Spell Tomes[/color][/b] added by mods are noticeably also tagged. Support includes (but is not limited to)  [url=https://next.nexusmods.com/profile/Darenii/mods?gameId=1704]Darenii's[/url] and [url=https://next.nexusmods.com/profile/Kittytail/mods?gameId=1704]Kittytail's[/url] spell catalogues.
+Short list of examples of [b][color=#f1c232]Spell[/color][/b] mods included:[spoiler]
+[font=Tahoma][color=#f1c232]✧[/color][/font] The Final Cataclysm // INFERNAL FLAME.esp
+[font=Tahoma][color=#f1c232]✧[/color][/font] Extraplanar Sword Techniques // Holy Sword.esp
+[font=Tahoma][color=#f1c232]✧[/color][/font] Elemental Mastery Magic // KittySpellPack02.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Frostbitten Dreams // IceBloomNightmare.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Practical Necromancy // The Dark Arts.esp
+[font=Tahoma][color=#f1c232]✧[/color][/font] Ancient Blood Magic // GargoyleBlood.esp
+[font=Tahoma][color=#f1c232]✧[/color][/font] Dark Hierophant Magic // Ghostlight.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Obscure Magic // KittySpellPack01.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Holy Templar Magic // Lightpower.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] The Art of Shadow // BlackLight.esp
+[font=Tahoma][color=#f1c232]✧[/color][/font] Winter Wonderland // Icebloom.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Abyssal Tides Magic // Aqua.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Abyssal Wind Magic // Aero.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] The Witcher Signs // W3S.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Sonic Blast // Shockwave.esl
+[font=Tahoma][color=#f1c232]✧[/color][/font] Singularity // DHSpell.esp
+[font=Tahoma][color=#f1c232]✧[/color][/font] Vitrium // Tools.esp
+... And others.[/spoiler]
+[b][color=#f1c232]Quest and book[/color][/b] mods tagged include:
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/29194]Interesting NPCs SE (3DNPC)[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/66666]College of Winterhold - Quest Expansion[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/47994]Bards Reborn[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/127087]Whispers of the Depths[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/126582]Little Lessons - Neglected Books Teach Small Skills[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] [url=https://www.nexusmods.com/skyrimspecialedition/mods/40262]Books of Wisdom[/url]
+[font=Tahoma][color=#f1c232]✧[/color][/font] Mods from other sites
+
+[line]
+[font=Arial][size=5][b][color=#f1c232]Installation[/color][/b][/size][/font]
+[color=#f1c232][b][font=Verdana]✧[/font][/b][/color] [b]As a SKSE plugin, can be placed anywhere in load order.[/b]
+Install like any other mod. Requires [url=https://www.nexusmods.com/skyrimspecialedition/mods/30379]Skyrim Script Extender (SKSE64)[/url] and [url=https://www.nexusmods.com/skyrimspecialedition/mods/32444]Address Library for SKSE Plugins[/url]﻿.
+[url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is optional. Allows you to change presence of tags while in-game.
+
+[font=Arial][size=5][b][color=#f1c232]Compatibility[/color][/b][/size][/font]
+[color=#f1c232][b][font=Verdana]✧[/font][/b][/color] [b]Compatible with everything.[/b] No performance impact.
+Compatible with [url=https://www.nexusmods.com/skyrimspecialedition/mods/107676]Dynamic String Distributor (DSD)[/url] translations. More information:[spoiler]
+Testing suggests that [url=https://www.nexusmods.com/skyrimspecialedition/mods/107676]DSD[/url] applies book name changes first, which are then tagged by VDT.[/spoiler]
+
+[line]
+[center]
+Feedback is always welcome. DMs are always open![/center]
