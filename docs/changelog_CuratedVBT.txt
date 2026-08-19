@@ -1,8 +1,12 @@
 VBT 2.1.1
-6 mods (6 added, 0 removed, 0 changed, 2 migrated out) for Curated VBT List:
+10 mods (10 added, 0 removed, 0 changed, 2 migrated out) for Curated VBT List:
 Added {2026-08-09} Starfall (Starfall): Starfall.esp (https://www.nexusmods.com/skyrimspecialedition/mods/186814)
 Added {2026-08-12} DeathMagic (Death Magic): DeathMagic.esp
 Added {2026-08-15} Immersive Dialogue Expansion - Dawnguard and Vigilants (Dawnguard and Vigilants): IDE Dawnguard Vigilants.esp (https://www.nexusmods.com/skyrimspecialedition/mods/188486)
+Added {2026-08-19} (Promises to Keep Plus): Flow-MS03.esp
+Added {2026-08-19} (Thieves Guild Plus): Flow-TG.esp
+Added {2026-08-19} (Chance Arrangement Plus): Flow-TG00.esp
+Added {2026-08-19} (Scoundrel's Folly Plus): Flow-TG04.esp
 Migrated out {2026-08-11} from Curated VDT List [Undeath] + Curated VBT List (Undeath) to SharedParentList [Undeath]: Undeath.esp
 Migrated out {2026-08-11} from Curated VBT List (Undeath) to SharedParentList [Undeath]: UndeathFixes.esp
 Added 18+ {2026-08-12} [SBOD] Book of Depravity (Book of Depravity): [SBOD] Book of Depravity.esp
