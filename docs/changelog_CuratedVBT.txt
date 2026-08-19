@@ -1,5 +1,5 @@
 VBT 2.1.1
-10 mods (10 added, 0 removed, 0 changed, 2 migrated out) for Curated VBT List:
+11 mods (11 added, 0 removed, 0 changed, 2 migrated out) for Curated VBT List:
 Added {2026-08-09} Starfall (Starfall): Starfall.esp (https://www.nexusmods.com/skyrimspecialedition/mods/186814)
 Added {2026-08-12} DeathMagic (Death Magic): DeathMagic.esp
 Added {2026-08-15} Immersive Dialogue Expansion - Dawnguard and Vigilants (Dawnguard and Vigilants): IDE Dawnguard Vigilants.esp (https://www.nexusmods.com/skyrimspecialedition/mods/188486)
@@ -12,6 +12,7 @@ Migrated out {2026-08-11} from Curated VBT List (Undeath) to SharedParentList [U
 Added 18+ {2026-08-12} [SBOD] Book of Depravity (Book of Depravity): [SBOD] Book of Depravity.esp
 Added 18+ {2026-08-12} StickyMagic (Sticky Magic): StickyMagic.esp
 Added 18+ {2026-08-19} (The Rot Below): CJ03Elroy.esp
+Added 18+ {2026-08-19} SL Survival (SexLab Survival): SL Survival.esp
 
 VBT 2.1.0
 19 mods (11 added, 0 removed, 8 changed) for Curated VBT List:
