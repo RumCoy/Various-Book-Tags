@@ -2,3 +2,7 @@
 
 [Changelog: Tags Master List](docs/changelog_SharedParentList.txt)<br>
 [Changelog: Curated Tags for VBT](docs/changelog_CuratedVBT.txt)
+
+You are currently in **Book**.<br>
+[Various Dialogue Tags](https://github.com/RumCoy/Various-Dialogue-Tags) <br>
+[Various Book Tags](https://github.com/RumCoy/Various-Book-Tags) **(Currently here)**
