@@ -89,6 +89,11 @@ add_commonlibsse_plugin(${PROJECT_NAME}
 
 set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "VariousBookTags")
 
+set(VBT_COMPILER_LAUNCHER "" CACHE STRING "Optional compiler launcher for the VBT target")
+if(VBT_COMPILER_LAUNCHER)
+    set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_COMPILER_LAUNCHER "${VBT_COMPILER_LAUNCHER}")
+endif()
+
 target_include_directories(${PROJECT_NAME} PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/lib/skse-menu-framework/resources")
 

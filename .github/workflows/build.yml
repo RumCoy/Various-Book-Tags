@@ -163,7 +163,7 @@ jobs:
         run: |
           for /f "usebackq delims=" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set "VSINSTALL=%%i"
           call "%VSINSTALL%\Common7\Tools\VsDevCmd.bat" -arch=x64 -host_arch=x64
-          cmake -S . -B build/release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -DVCPKG_MANIFEST_INSTALL=%VCPKG_MANIFEST_INSTALL% -DCMAKE_CXX_COMPILER_LAUNCHER=sccache -DCOMMONLIB_PREBUILT_DIR="%COMMONLIB_PREBUILT_DIR%" -DVBT_PRECOMPILE_HEADERS=OFF -DVBT_INTERNAL_DATA_PREMERGED_PATH="%GITHUB_WORKSPACE%\build\layered-data\VariousBookTags_InternalData.ini"
+          cmake -S . -B build/release -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE="%VCPKG_ROOT%\scripts\buildsystems\vcpkg.cmake" -DVCPKG_MANIFEST_INSTALL=%VCPKG_MANIFEST_INSTALL% -DVBT_COMPILER_LAUNCHER=sccache -DCOMMONLIB_PREBUILT_DIR="%COMMONLIB_PREBUILT_DIR%" -DVBT_PRECOMPILE_HEADERS=OFF -DVBT_INTERNAL_DATA_PREMERGED_PATH="%GITHUB_WORKSPACE%\build\layered-data\VariousBookTags_InternalData.ini"
 
       - name: Check CommonLibSSE build mode
         id: commonlib-build-mode
