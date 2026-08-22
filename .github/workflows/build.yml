@@ -124,7 +124,9 @@ jobs:
         uses: actions/cache@v6
         with:
           path: build/release/lib/commonlibsse-ng/.prebuilt
-          key: commonlibsse-prebuilt-${{ runner.os }}-${{ steps.dependency-versions.outputs.commonlibsse }}
+          key: commonlibsse-prebuilt-v2-${{ runner.os }}-${{ steps.dependency-versions.outputs.commonlibsse }}
+          restore-keys: |
+            commonlibsse-prebuilt-${{ runner.os }}-${{ steps.dependency-versions.outputs.commonlibsse }}
 
       - name: Locate cached CommonLibSSE prebuilt
         id: commonlib-prebuilt
@@ -172,6 +174,21 @@ jobs:
           $ninja = Get-Content -Raw -LiteralPath build/release/build.ninja
           $prebuilt = $ninja -match '[\\/]\.prebuilt[\\/].*[\\/]lib[\\/]CommonLibSSE\.lib'
           "prebuilt=$($prebuilt.ToString().ToLowerInvariant())" >> $env:GITHUB_OUTPUT
+
+      - name: Trim CommonLibSSE prebuilt cache
+        if: steps.commonlib-build-mode.outputs.prebuilt == 'true'
+        shell: pwsh
+        run: |
+          $root = Join-Path $env:GITHUB_WORKSPACE "build/release/lib/commonlibsse-ng/.prebuilt"
+          $before = (Get-ChildItem -LiteralPath $root -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+          Get-ChildItem -LiteralPath $root -File -ErrorAction SilentlyContinue |
+            Where-Object { $_.Extension -in '.zip', '.sha256' } |
+            Remove-Item -Force
+          Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue |
+            Where-Object { $_.Name.EndsWith('.x') } |
+            Remove-Item -Recurse -Force
+          $after = (Get-ChildItem -LiteralPath $root -Recurse -File -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum
+          "CommonLibSSE prebuilt cache payload: {0:N1} MB -> {1:N1} MB" -f ($before / 1MB), ($after / 1MB)
 
       - name: Restore CommonLib OpenVR
         if: steps.commonlib-build-mode.outputs.prebuilt != 'true'
