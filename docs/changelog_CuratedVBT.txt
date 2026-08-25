@@ -1,11 +1,14 @@
 VBT 2.1.3
-7 mods (7 added, 0 removed, 0 changed, 2 migrated in) for Curated VBT List:
+10 mods (9 added, 0 removed, 1 changed, 2 migrated in) for Curated VBT List:
 Added {2026-08-22} SeranaDialogueExpansion - Romance (Serana Dialogue Expansion): SeranaDialogueExpansion - Romance.esp
 Added {2026-08-24} 3DNPC Alternative Locations (3DNPC): 3DNPC Alternative Locations.esp
 Added {2026-08-24} Flow-TG05 (Speaking With Silence): Flow-TG05.esp
 Added {2026-08-24} MysticismSurvivalSpells (Mysticism): MysticismSurvivalSpells.esp
 Added {2026-08-24} Naz_Aerith (Aerith Mensier): Naz_Aerith.esp
 Added {2026-08-24} RU_CityTreesSE (City Trees): RU_CityTreesSE.esm
+Added {2026-08-25} (Dawnguard Tweaks): Dawnguard - Tweaks and Enhancements.esp
+Added {2026-08-25} (Loud and Clear Plus): Flow-TG02.esp
+Changed {2026-08-25} (Exam Boobs) to (Breast Exams): shadowman_examboobs.esp
 Migrated in {2026-08-24} from SharedParentList [Triple Triad] to Curated VDT List [Triple Triad] + Curated VBT List (Triple Triad): Triple Triad Skyrim.esp
 Added 18+ {2026-08-24} CreatureSummoner (Creature Summoner): CreatureSummoner.esp
 Migrated in 18+ {2026-08-24} from Curated VDT List [AA] to SharedParentList [AA] + Curated VBT List (Amorous Adventures): AmorousPlayerDialogueRewritten.esp
