@@ -39,7 +39,7 @@ namespace
         return value;
     }
 
-    bool ParseBool(std::string value, bool fallback)
+    std::optional<bool> ParseBoolValue(std::string value)
     {
         value = Lower(Trim(std::move(value)));
         if (value == "true" || value == "1" || value == "yes" || value == "on") {
@@ -47,6 +47,14 @@ namespace
         }
         if (value == "false" || value == "0" || value == "no" || value == "off") {
             return false;
+        }
+        return std::nullopt;
+    }
+
+    bool ParseBool(std::string value, bool fallback)
+    {
+        if (const auto parsed = ParseBoolValue(std::move(value))) {
+            return *parsed;
         }
         return fallback;
     }
@@ -70,15 +78,19 @@ namespace
         return value;
     }
 
-    void ParseFormList(std::string value, std::unordered_set<std::uint32_t>& destination)
+    bool ParseFormList(std::string value, std::unordered_set<std::uint32_t>& destination)
     {
+        bool valid = true;
         std::stringstream stream(std::move(value));
         std::string token;
         while (std::getline(stream, token, ',')) {
             if (const auto parsed = ParseFormID(std::move(token))) {
                 destination.insert(*parsed);
+            } else {
+                valid = false;
             }
         }
+        return valid;
     }
 
 }
@@ -138,7 +150,7 @@ namespace VariousBookTags
             return false;
         }
 
-        return LoadStream(input, path.filename().string());
+        return LoadStream(input, path.filename().string(), true, true);
     }
 
     bool Config::LoadTempCache(const std::filesystem::path& path)
@@ -156,12 +168,22 @@ namespace VariousBookTags
     }
 
     bool Config::LoadStream(std::istream& input, std::string sourceName,
-        bool loadPluginRules)
+        bool loadPluginRules, bool userOverride)
     {
-        std::unordered_map<std::string, Rule> fileRules;
+        struct ParsedRule
+        {
+            Rule rule;
+            bool tagSpecified{};
+            bool includeFormsSpecified{};
+            bool excludeFormsSpecified{};
+            bool skillTagsSpecified{};
+            bool modNameTagsSpecified{};
+        };
+
+        std::unordered_map<std::string, ParsedRule> fileRules;
         enum class Section { kOther, kGeneral, kPlugin };
         Section activeSection = Section::kOther;
-        Rule* activeRule = nullptr;
+        ParsedRule* activeRule = nullptr;
         std::string line;
         std::size_t lineNumber = 0;
         while (std::getline(input, line)) {
@@ -182,7 +204,10 @@ namespace VariousBookTags
                 } else if (loadPluginRules && lowered.starts_with(prefix)) {
                     auto pluginName = Trim(section.substr(prefix.size()));
                     if (!pluginName.empty()) {
-                        auto result = fileRules.insert_or_assign(Lower(pluginName), Rule{});
+                        const auto key = Lower(pluginName);
+                        auto result = userOverride ?
+                            fileRules.try_emplace(key, ParsedRule{}) :
+                            fileRules.insert_or_assign(key, ParsedRule{});
                         activeRule = std::addressof(result.first->second);
                         activeSection = Section::kPlugin;
                     }
@@ -220,22 +245,94 @@ namespace VariousBookTags
 
             const auto canonical = CanonicalKey(std::move(key));
             if (canonical == "tag") {
-                activeRule->tag = std::move(value);
+                activeRule->tagSpecified = true;
+                activeRule->rule.tag = std::move(value);
             } else if (canonical == "includeforms") {
-                ParseFormList(std::move(value), activeRule->includeForms);
+                if (userOverride) {
+                    std::unordered_set<std::uint32_t> forms;
+                    if (ParseFormList(value, forms)) {
+                        activeRule->includeFormsSpecified = true;
+                        activeRule->rule.includeForms = std::move(forms);
+                    } else {
+                        SKSE::log::warn("Ignored invalid IncludeForms at line {} in {}",
+                            lineNumber, sourceName);
+                    }
+                } else {
+                    activeRule->includeFormsSpecified = true;
+                    activeRule->rule.includeForms.clear();
+                    ParseFormList(std::move(value), activeRule->rule.includeForms);
+                }
             } else if (canonical == "excludeforms") {
-                ParseFormList(std::move(value), activeRule->excludeForms);
+                if (userOverride) {
+                    std::unordered_set<std::uint32_t> forms;
+                    if (ParseFormList(value, forms)) {
+                        activeRule->excludeFormsSpecified = true;
+                        activeRule->rule.excludeForms = std::move(forms);
+                    } else {
+                        SKSE::log::warn("Ignored invalid ExcludeForms at line {} in {}",
+                            lineNumber, sourceName);
+                    }
+                } else {
+                    activeRule->excludeFormsSpecified = true;
+                    activeRule->rule.excludeForms.clear();
+                    ParseFormList(std::move(value), activeRule->rule.excludeForms);
+                }
             } else if (canonical == "skilltags") {
-                activeRule->skillTags = ParseBool(value, true);
+                if (!userOverride || value.empty()) {
+                    activeRule->skillTagsSpecified = true;
+                    activeRule->rule.skillTags = ParseBool(value, true);
+                } else if (const auto parsed = ParseBoolValue(value)) {
+                    activeRule->skillTagsSpecified = true;
+                    activeRule->rule.skillTags = *parsed;
+                } else {
+                    SKSE::log::warn("Ignored invalid SkillTags at line {} in {}",
+                        lineNumber, sourceName);
+                }
             } else if (canonical == "modnametags") {
-                activeRule->modNameTags = ParseBool(value, true);
+                if (!userOverride || value.empty()) {
+                    activeRule->modNameTagsSpecified = true;
+                    activeRule->rule.modNameTags = ParseBool(value, true);
+                } else if (const auto parsed = ParseBoolValue(value)) {
+                    activeRule->modNameTagsSpecified = true;
+                    activeRule->rule.modNameTags = *parsed;
+                } else {
+                    SKSE::log::warn("Ignored invalid ModNameTags at line {} in {}",
+                        lineNumber, sourceName);
+                }
             }
         }
 
         std::size_t loaded = 0;
         std::size_t overridden = 0;
-        for (auto& [pluginName, rule] : fileRules) {
-            if (rules_.contains(pluginName)) {
+        for (auto& [pluginName, parsed] : fileRules) {
+            const auto existing = rules_.find(pluginName);
+            const bool hasExistingRule = existing != rules_.end();
+            Rule rule;
+
+            if (userOverride) {
+                if (hasExistingRule) {
+                    rule = existing->second;
+                }
+                if (parsed.tagSpecified) {
+                    rule.tag = std::move(parsed.rule.tag);
+                }
+                if (parsed.includeFormsSpecified) {
+                    rule.includeForms = std::move(parsed.rule.includeForms);
+                }
+                if (parsed.excludeFormsSpecified) {
+                    rule.excludeForms = std::move(parsed.rule.excludeForms);
+                }
+                if (parsed.skillTagsSpecified) {
+                    rule.skillTags = parsed.rule.skillTags;
+                }
+                if (parsed.modNameTagsSpecified) {
+                    rule.modNameTags = parsed.rule.modNameTags;
+                }
+            } else {
+                rule = std::move(parsed.rule);
+            }
+
+            if (hasExistingRule) {
                 ++overridden;
             }
             rules_.insert_or_assign(std::move(pluginName), std::move(rule));

@@ -53,7 +53,7 @@ namespace VariousBookTags
         bool LoadUserFile(const std::filesystem::path& path);
         bool LoadTempCache(const std::filesystem::path& path);
         bool LoadStream(std::istream& input, std::string sourceName,
-            bool loadPluginRules = true);
+            bool loadPluginRules = true, bool userOverride = false);
         [[nodiscard]] bool SaveTempCache() const;
         [[nodiscard]] bool UpdateUserConfigSetting(
             std::string_view key, std::string_view value) const;
