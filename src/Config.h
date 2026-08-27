@@ -2,6 +2,7 @@
 
 #include <RE/Skyrim.h>
 
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <iosfwd>
@@ -52,16 +53,23 @@ namespace VariousBookTags
         void Reset();
         bool LoadUserFile(const std::filesystem::path& path);
         bool LoadTempCache(const std::filesystem::path& path);
+        std::size_t LoadDynamicFiles(const std::filesystem::path& directory);
         bool LoadStream(std::istream& input, std::string sourceName,
-            bool loadPluginRules = true, bool userOverride = false);
-        [[nodiscard]] bool SaveTempCache() const;
-        [[nodiscard]] bool UpdateUserConfigSetting(
+            bool loadGeneralSettings, bool loadPluginRules, bool userOverride);
+        [[nodiscard]] bool PersistMenuSetting(
             std::string_view key, std::string_view value) const;
+        [[nodiscard]] bool SyncUserGeneralSettingsToTempCache() const;
+        [[nodiscard]] bool UpdateGeneralSetting(const std::filesystem::path& path,
+            std::string_view key, std::string_view value, bool createIfMissing) const;
 
         bool enabled_{ true };
         bool skillTagsEnabled_{ true };
         bool modNameTagsEnabled_{ true };
         bool globalPluginNameFallbackEnabled_{ false };
+        std::optional<bool> userEnabledOverride_;
+        std::optional<bool> userSkillTagsOverride_;
+        std::optional<bool> userModNameTagsOverride_;
+        std::optional<bool> userGlobalPluginNameFallbackOverride_;
         std::filesystem::path userConfigPath_;
         std::filesystem::path tempCachePath_;
         std::unordered_map<std::string, Rule> rules_;

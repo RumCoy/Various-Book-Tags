@@ -15,6 +15,11 @@
 
 namespace
 {
+    constexpr std::string_view kDynamicPrefix = "variousbooktags_";
+    constexpr std::string_view kIniExtension = ".ini";
+    constexpr std::string_view kUserConfigName = "variousbooktags_userconfig.ini";
+    constexpr std::string_view kTempCacheName = "variousbooktags_tempcache.ini";
+
     std::string Trim(std::string value)
     {
         const auto notSpace = [](unsigned char ch) { return !std::isspace(ch); };
@@ -37,6 +42,23 @@ namespace
             return std::isspace(ch) || ch == '-' || ch == '_';
         });
         return value;
+    }
+
+    bool IsDefaultValue(std::string value)
+    {
+        return Lower(Trim(std::move(value))) == "default";
+    }
+
+    bool IsDynamicConfigFile(const std::filesystem::path& path)
+    {
+        const auto fileName = Lower(path.filename().string());
+        if (!fileName.starts_with(kDynamicPrefix) || !fileName.ends_with(kIniExtension)) {
+            return false;
+        }
+        if (fileName == kUserConfigName || fileName == kTempCacheName) {
+            return false;
+        }
+        return fileName.size() > kDynamicPrefix.size() + kIniExtension.size();
     }
 
     std::optional<bool> ParseBoolValue(std::string value)
@@ -92,7 +114,6 @@ namespace
         }
         return valid;
     }
-
 }
 
 namespace VariousBookTags
@@ -117,6 +138,10 @@ namespace VariousBookTags
         skillTagsEnabled_ = true;
         modNameTagsEnabled_ = true;
         globalPluginNameFallbackEnabled_ = false;
+        userEnabledOverride_.reset();
+        userSkillTagsOverride_.reset();
+        userModNameTagsOverride_.reset();
+        userGlobalPluginNameFallbackOverride_.reset();
         rules_.clear();
     }
 
@@ -130,16 +155,21 @@ namespace VariousBookTags
 
         std::istringstream internalDataInput{ std::string(embeddedInternalData) };
         const bool loadedEmbeddedData = embeddedInternalData.empty() ?
-            false : LoadStream(internalDataInput, "embedded internal data");
+            false : LoadStream(internalDataInput, "embedded internal data", false, true, false);
         const bool loadedTempCache = LoadTempCache(tempCachePath_);
         const bool loadedUserConfig = LoadUserFile(userConfigPath_);
+        if (loadedUserConfig && !SyncUserGeneralSettingsToTempCache()) {
+            SKSE::log::error("Failed to synchronize one or more explicit user settings to temp cache");
+        }
+        const auto dynamicConfigCount = LoadDynamicFiles(userConfigPath_.parent_path());
 
         SKSE::log::info(
-            "Configuration complete: {} book rule(s); enabled={}; skillTags={}; modNameTags={}; globalPluginNameFallback={}; embeddedData={}; userConfig={}; tempCache={}",
-            rules_.size(), enabled_, skillTagsEnabled_,
-            modNameTagsEnabled_, globalPluginNameFallbackEnabled_,
-            loadedEmbeddedData, loadedUserConfig, loadedTempCache);
-        return loadedEmbeddedData || loadedUserConfig || loadedTempCache;
+            "Configuration complete: {} book rule(s); enabled={}; skillTags={}; modNameTags={}; "
+            "globalPluginNameFallback={}; embeddedData={}; userConfig={}; tempCache={}; dynamicConfigs={}",
+            rules_.size(), enabled_, skillTagsEnabled_, modNameTagsEnabled_,
+            globalPluginNameFallbackEnabled_, loadedEmbeddedData, loadedUserConfig,
+            loadedTempCache, dynamicConfigCount);
+        return loadedEmbeddedData || loadedUserConfig || loadedTempCache || dynamicConfigCount > 0;
     }
 
     bool Config::LoadUserFile(const std::filesystem::path& path)
@@ -150,7 +180,7 @@ namespace VariousBookTags
             return false;
         }
 
-        return LoadStream(input, path.filename().string(), true, true);
+        return LoadStream(input, path.filename().string(), true, true, true);
     }
 
     bool Config::LoadTempCache(const std::filesystem::path& path)
@@ -164,11 +194,67 @@ namespace VariousBookTags
             return false;
         }
 
-        return LoadStream(input, path.filename().string(), false);
+        return LoadStream(input, path.filename().string(), true, false, false);
+    }
+
+    std::size_t Config::LoadDynamicFiles(const std::filesystem::path& directory)
+    {
+        if (directory.empty()) {
+            return 0;
+        }
+
+        std::error_code error;
+        std::filesystem::directory_iterator iterator(directory, error);
+        if (error) {
+            SKSE::log::warn("Unable to scan dynamic configuration directory {}: {}",
+                directory.string(), error.message());
+            return 0;
+        }
+
+        std::vector<std::filesystem::path> paths;
+        const std::filesystem::directory_iterator end;
+        for (; iterator != end; iterator.increment(error)) {
+            if (error) {
+                break;
+            }
+            std::error_code typeError;
+            if (!iterator->is_regular_file(typeError) || typeError) {
+                continue;
+            }
+            if (IsDynamicConfigFile(iterator->path())) {
+                paths.push_back(iterator->path());
+            }
+        }
+        if (error) {
+            SKSE::log::warn("Dynamic configuration scan stopped in {}: {}",
+                directory.string(), error.message());
+        }
+
+        std::sort(paths.begin(), paths.end(), [](const auto& left, const auto& right) {
+            const auto leftName = Lower(left.filename().string());
+            const auto rightName = Lower(right.filename().string());
+            if (leftName != rightName) {
+                return leftName < rightName;
+            }
+            return left.filename().string() < right.filename().string();
+        });
+
+        std::size_t loadedFiles = 0;
+        for (const auto& path : paths) {
+            std::ifstream input(path);
+            if (!input) {
+                SKSE::log::warn("Unable to open dynamic configuration: {}", path.string());
+                continue;
+            }
+            if (LoadStream(input, path.filename().string(), false, true, true)) {
+                ++loadedFiles;
+            }
+        }
+        return loadedFiles;
     }
 
     bool Config::LoadStream(std::istream& input, std::string sourceName,
-        bool loadPluginRules, bool userOverride)
+        bool loadGeneralSettings, bool loadPluginRules, bool userOverride)
     {
         struct ParsedRule
         {
@@ -199,7 +285,7 @@ namespace VariousBookTags
                 activeSection = Section::kOther;
                 activeRule = nullptr;
                 constexpr std::string_view prefix = "plugin:";
-                if (lowered == "general") {
+                if (loadGeneralSettings && lowered == "general") {
                     activeSection = Section::kGeneral;
                 } else if (loadPluginRules && lowered.starts_with(prefix)) {
                     auto pluginName = Trim(section.substr(prefix.size()));
@@ -217,24 +303,45 @@ namespace VariousBookTags
 
             const auto separator = line.find('=');
             if (separator == std::string::npos) {
-                SKSE::log::warn("Ignored malformed line {} in {}",
-                    lineNumber, sourceName);
+                SKSE::log::warn("Ignored malformed line {} in {}", lineNumber, sourceName);
                 continue;
             }
 
             auto key = Trim(line.substr(0, separator));
             auto value = Trim(line.substr(separator + 1));
             if (activeSection == Section::kGeneral) {
+                if (IsDefaultValue(value)) {
+                    continue;
+                }
                 const auto canonical = CanonicalKey(key);
                 if (canonical == "enabled") {
-                    enabled_ = ParseBool(value, enabled_);
+                    if (const auto parsed = ParseBoolValue(value)) {
+                        enabled_ = *parsed;
+                        if (userOverride) {
+                            userEnabledOverride_ = *parsed;
+                        }
+                    }
                 } else if (canonical == "skilltags") {
-                    skillTagsEnabled_ = ParseBool(value, true);
+                    if (const auto parsed = ParseBoolValue(value)) {
+                        skillTagsEnabled_ = *parsed;
+                        if (userOverride) {
+                            userSkillTagsOverride_ = *parsed;
+                        }
+                    }
                 } else if (canonical == "modnametags") {
-                    modNameTagsEnabled_ = ParseBool(value, true);
+                    if (const auto parsed = ParseBoolValue(value)) {
+                        modNameTagsEnabled_ = *parsed;
+                        if (userOverride) {
+                            userModNameTagsOverride_ = *parsed;
+                        }
+                    }
                 } else if (canonical == "globalpluginnamefallback") {
-                    globalPluginNameFallbackEnabled_ = ParseBool(
-                        value, globalPluginNameFallbackEnabled_);
+                    if (const auto parsed = ParseBoolValue(value)) {
+                        globalPluginNameFallbackEnabled_ = *parsed;
+                        if (userOverride) {
+                            userGlobalPluginNameFallbackOverride_ = *parsed;
+                        }
+                    }
                 }
                 continue;
             }
@@ -380,9 +487,30 @@ namespace VariousBookTags
         }
 
         bool saved = true;
-        if (!SaveTempCache()) {
-            SKSE::log::error("Failed to save SKSE Menu Framework settings to temp cache: {}",
-                tempCachePath_.string());
+        const auto persist = [this, &saved](
+                                 std::string_view key, const std::optional<bool>& setting) {
+            if (!setting.has_value()) {
+                return;
+            }
+            const auto value = *setting ? "true" : "false";
+            if (!PersistMenuSetting(key, value)) {
+                saved = false;
+            }
+        };
+
+        persist("Enabled", update.enabled);
+        persist("SkillTags", update.skillTags);
+        persist("ModNameTags", update.modNameTags);
+        persist("GlobalPluginNameFallback", update.globalPluginNameFallback);
+        return saved;
+    }
+
+    bool Config::PersistMenuSetting(std::string_view key, std::string_view value) const
+    {
+        bool saved = true;
+        if (!UpdateGeneralSetting(tempCachePath_, key, value, true)) {
+            SKSE::log::error("Failed to save SKSE Menu Framework setting {} to temp cache: {}",
+                key, tempCachePath_.string());
             saved = false;
         }
 
@@ -395,69 +523,63 @@ namespace VariousBookTags
             return false;
         }
 
-        if (!userConfigExists) {
-            return saved;
+        if (userConfigExists &&
+            !UpdateGeneralSetting(userConfigPath_, key, value, false)) {
+            SKSE::log::error(
+                "Failed to save SKSE Menu Framework setting {} to user configuration: {}",
+                key, userConfigPath_.string());
+            saved = false;
         }
+        return saved;
+    }
 
-        const auto persist = [this, &saved](
-                                 std::string_view key, const std::optional<bool>& setting) {
+    bool Config::SyncUserGeneralSettingsToTempCache() const
+    {
+        bool saved = true;
+        const auto sync = [this, &saved](
+                              std::string_view key, const std::optional<bool>& setting) {
             if (!setting.has_value()) {
                 return;
             }
-            if (!UpdateUserConfigSetting(key, *setting ? "true" : "false")) {
-                SKSE::log::error(
-                    "Failed to save SKSE Menu Framework setting {} to user configuration: {}",
-                    key, userConfigPath_.string());
+            if (!UpdateGeneralSetting(
+                    tempCachePath_, key, *setting ? "true" : "false", true)) {
                 saved = false;
             }
         };
 
-        persist("Enabled", update.enabled);
-        persist("SkillTags", update.skillTags);
-        persist("ModNameTags", update.modNameTags);
-        persist("GlobalPluginNameFallback", update.globalPluginNameFallback);
+        sync("Enabled", userEnabledOverride_);
+        sync("SkillTags", userSkillTagsOverride_);
+        sync("ModNameTags", userModNameTagsOverride_);
+        sync("GlobalPluginNameFallback", userGlobalPluginNameFallbackOverride_);
         return saved;
     }
 
-    bool Config::SaveTempCache() const
+    bool Config::UpdateGeneralSetting(const std::filesystem::path& path,
+        std::string_view key, std::string_view value, bool createIfMissing) const
     {
-        if (tempCachePath_.empty()) {
+        if (path.empty()) {
             return false;
         }
 
-        std::ofstream output(tempCachePath_, std::ios::trunc);
-        if (!output) {
+        std::error_code error;
+        const bool exists = std::filesystem::exists(path, error);
+        if (error || (!exists && !createIfMissing)) {
             return false;
         }
 
-        output
-            << "[General]\n"
-            << "Enabled = " << (Enabled() ? "true" : "false") << '\n'
-            << "SkillTags = " << (SkillTagsEnabled() ? "true" : "false") << '\n'
-            << "ModNameTags = " << (ModNameTagsEnabled() ? "true" : "false") << '\n'
-            << "GlobalPluginNameFallback = "
-            << (GlobalPluginNameFallbackEnabled() ? "true" : "false") << '\n';
-
-        return static_cast<bool>(output);
-    }
-
-    bool Config::UpdateUserConfigSetting(std::string_view key, std::string_view value) const
-    {
-        if (userConfigPath_.empty()) {
-            return false;
+        std::string contents;
+        if (exists) {
+            std::ifstream input(path, std::ios::binary);
+            if (!input) {
+                return false;
+            }
+            std::ostringstream buffer;
+            buffer << input.rdbuf();
+            if (input.bad()) {
+                return false;
+            }
+            contents = buffer.str();
         }
-
-        std::ifstream input(userConfigPath_, std::ios::binary);
-        if (!input) {
-            return false;
-        }
-
-        std::ostringstream buffer;
-        buffer << input.rdbuf();
-        if (input.bad()) {
-            return false;
-        }
-        const std::string contents = buffer.str();
 
         struct TextLine
         {
@@ -497,7 +619,8 @@ namespace VariousBookTags
         bool inGeneral = false;
         bool foundGeneral = false;
         bool trackingLastGeneral = false;
-        bool updated = false;
+        bool foundSetting = false;
+        bool changed = false;
         std::size_t lastGeneralEnd = lines.size();
 
         for (std::size_t i = 0; i < lines.size(); ++i) {
@@ -511,7 +634,6 @@ namespace VariousBookTags
                     lastGeneralEnd = i;
                     trackingLastGeneral = false;
                 }
-
                 const auto sectionName = Lower(Trim(
                     parsedLine.substr(1, parsedLine.size() - 2)));
                 inGeneral = sectionName == "general";
@@ -534,6 +656,7 @@ namespace VariousBookTags
                 continue;
             }
 
+            foundSetting = true;
             std::size_t valueStart = separator + 1;
             while (valueStart < lines[i].text.size() &&
                    std::isspace(static_cast<unsigned char>(lines[i].text[valueStart]))) {
@@ -553,15 +676,17 @@ namespace VariousBookTags
                 --valueEnd;
             }
 
-            lines[i].text.replace(valueStart, valueEnd - valueStart, value);
-            updated = true;
+            if (lines[i].text.substr(valueStart, valueEnd - valueStart) != value) {
+                lines[i].text.replace(valueStart, valueEnd - valueStart, value);
+                changed = true;
+            }
         }
 
         if (trackingLastGeneral) {
             lastGeneralEnd = lines.size();
         }
 
-        if (!updated) {
+        if (!foundSetting) {
             TextLine settingLine{
                 std::string(key) + " = " + std::string(value),
                 preferredLineEnding
@@ -587,17 +712,30 @@ namespace VariousBookTags
                         lines.push_back({ {}, preferredLineEnding });
                     }
                 }
-
                 lines.push_back({ "[General]", preferredLineEnding });
                 lines.push_back({
                     std::string(key) + " = " + std::string(value),
                     (hadFinalNewline || contents.empty()) ? preferredLineEnding : std::string{}
                 });
             }
+            changed = true;
         }
 
-        input.close();
-        std::ofstream output(userConfigPath_, std::ios::binary | std::ios::trunc);
+        if (exists && !changed) {
+            return true;
+        }
+
+        if (!exists) {
+            const auto parent = path.parent_path();
+            if (!parent.empty()) {
+                std::filesystem::create_directories(parent, error);
+                if (error) {
+                    return false;
+                }
+            }
+        }
+
+        std::ofstream output(path, std::ios::binary | std::ios::trunc);
         if (!output) {
             return false;
         }

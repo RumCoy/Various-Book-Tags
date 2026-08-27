@@ -107,3 +107,6 @@ install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION "SKSE/Plugins"
     LIBRARY DESTINATION "SKSE/Plugins"
 )
+install(FILES resources/VariousBookTags_UserConfig.ini
+    DESTINATION "SKSE/Plugins"
+)

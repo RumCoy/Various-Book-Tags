@@ -21,14 +21,24 @@ Intended as a(nother) niche mod, originally meant to help keep track of [url=htt
 
 Inspired by KrisV777's [url=https://www.nexusmods.com/skyrimspecialedition/mods/135618]Dynamic Dialogue Replacer (DDR)[/url] and SkyHorizon's [url=https://www.nexusmods.com/skyrimspecialedition/mods/107676]Dynamic String Distributor (DSD)[/url], VBT dynamically adds tags to books at runtime, avoiding the risks associated with editing plugins/ESPs. This allows VBT to be [b][color=#a4c2f4]compatible with everything[/color][/b]. (Hooray!)
 
-By default, VBT only tags mods explicitly supported by the curated built-in list, or by the optional [b]User Config[/b]. The Config also allows you to [b][color=#a4c2f4]automatically tag every mod-added book[/color][/b] (this is disabled by default). Alternatively, [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] allows you to control the presence of tags (including skill tags & automatically-generated tags) without needing to use the optional Config file.
+By default, VBT only tags mods explicitly supported by the curated built-in list, by the [b]User Config[/b], or by user-generated [b]VariousBookTags_*.ini[/b] files. The Config also allows you to [b][color=#a4c2f4]automatically tag every mod-added book[/color][/b] (this is disabled by default). Alternatively, [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] allows you to control the presence of tags (including skill tags & automatically-generated tags) without manually editing the Config file.
 
 [center][img]https://staticdelivery.nexusmods.com/mods/1704/images/63625/63625-1676996774-1699634888.png[/img][/center]
 Inspired by Kevkas's [url=https://www.nexusmods.com/skyrimspecialedition/mods/5260]Better Skill and Quest Books Names[/url]﻿ and olioster's [url=https://www.nexusmods.com/skyrimspecialedition/mods/32721]Better Skill and Quest Books Names - Consistency Patches[/url], VBT similarly tags associated skill bonuses for both vanilla and mod-added books, [b][color=#a4c2f4]for all tagged mods[/color][/b].
 
-VBT is an SKSE plugin, with [url=https://github.com/RumCoy/Various-Book-Tags]source code available on GitHub[/url]. While it comes with its own curated built-in list of 300+ mods, players can override, change, or otherwise add additional mods via [b]VariousBookTags_UserConfig.ini[/b]. The optional Config is separate from the main download for easier maintenance of your own changes.
+VBT is an SKSE plugin, with [url=https://github.com/RumCoy/Various-Book-Tags]source code available on GitHub[/url]. While it comes with its own curated built-in list of 300+ mods, players can override, change, or otherwise add additional mods via [b]VariousBookTags_UserConfig.ini[/b]. For update-safe custom rules, create a file named [b]VariousBookTags_*.ini[/b], replacing * with any name you want.
+[color=#a4c2f4][b]VariousBookTags_*.ini example:[/b][/color][b]
+[color=#a4c2f4][spoiler][color=#ffffff][quote]
+[b]Only include the [i][Plugin: ...][/i] sections you want to add or change.
+This is the whole file for VariousDialogueTags_MyTags_Example.ini:[code]
+[Plugin:RandoMod.esp]
+Tag=My Custom Tag
+IncludeForms=12345,67890
 
-[b][color=#a4c2f4]Automatic tags for any and every mod are now available![/color][/b] An option for players trying to trace a particular book/note, or for those who don't care about having only curated tags: VBT now allows mod books to be automatically tagged with the mod's plugin name if a curated/user-defined tag does not already exist. This option is disabled by default. Navigate to [i]SKSE\Plugins\VariousBooksTags_UserConfig.ini[/i] and set [i]GlobalPluginNameFallback=true[/i] to enable. Alternatively (and easier-tively), [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is now also natively supported—[url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is completely optional, but it will allow you to freely hide or show tags (skill tags, automatically-generated, etc.) while in-game.
+[Plugin:Ash Nazg.esp]
+Tag=Precious)(Tag
+[/b][/code][/quote][/color][/spoiler][/color][/b]
+[b][color=#a4c2f4]Automatic tags for any and every mod are now available![/color][/b] An option for players trying to trace a particular book/note, or for those who don't care about having only curated tags: VBT now allows mod books to be automatically tagged with the mod's plugin name if a curated/user-defined tag does not already exist. This option is disabled by default. Navigate to [i]SKSE\Plugins\VariousBookTags_UserConfig.ini[/i] and set [i]GlobalPluginNameFallback=true[/i] to enable. Alternatively (and easier-tively), [url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is now also natively supported—[url=https://www.nexusmods.com/skyrimspecialedition/mods/120352]SKSE Menu Framework[/url] is completely optional, but it will allow you to freely hide or show tags (skill tags, automatically-generated, etc.) while in-game.
 
 
 [font=Arial][size=5][b][color=#f1c232]Built-In Support[/color][/b][/size][/font]
