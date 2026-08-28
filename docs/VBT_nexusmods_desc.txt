@@ -30,7 +30,7 @@ VBT is an SKSE plugin, with [url=https://github.com/RumCoy/Various-Book-Tags]sou
 [color=#a4c2f4][b]VariousBookTags_*.ini example:[/b][/color][b]
 [color=#a4c2f4][spoiler][color=#ffffff][quote]
 [b]Only include the [i][Plugin: ...][/i] sections you want to add or change.
-This is the whole file for VariousDialogueTags_MyTags_Example.ini:[code]
+This is the whole file for VariousBookTags_MyTags_Example.ini:[code]
 [Plugin:RandoMod.esp]
 Tag=My Custom Tag
 IncludeForms=12345,67890
